@@ -32,14 +32,15 @@ public class User {
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDate;
 
+    @Column(name = "is_guest")
+    private Boolean isGuest;
+
     // 외래키
     @Column(name = "profile_file_id", nullable = true)
     private Long profileFileId;
 
-//    @Column(nullable = false, length = 7)
-//    private String provider;
-//    안쓰는 항목 제거
-//    private String username;
+    @Column(nullable = false)
+    private String name;
 
     @PrePersist // user entity가 저장될 때 현재 날짜로 설정
     protected void onCreate() {
@@ -49,6 +50,10 @@ public class User {
     public void updateUser(String nickname, Date birth) {
         this.nickname = nickname;
         this.birth = birth;
+    }
+
+    public void updateNickname(String nickname){
+        this.nickname = nickname;
     }
 
     public void updateProfileImg(Long profileFileId) {
