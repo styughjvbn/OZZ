@@ -15,7 +15,7 @@ public class GuestServiceImpl implements GuestService{
 
     @Transactional
     @Override
-    public User createGuest() {
+    public long createGuest() {
         User guestUser = userRepository.save(User.builder()
                 .birth(new Date())
                 .email("guest@guest.com")
@@ -23,6 +23,6 @@ public class GuestServiceImpl implements GuestService{
                 .isGuest(true)
                 .build());
         guestUser.updateNickname("guest"+guestUser.getId());
-        return guestUser;
+        return guestUser.getId();
     }
 }
