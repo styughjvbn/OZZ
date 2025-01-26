@@ -1,10 +1,9 @@
 package com.ssafy.ozz.auth.global.config;
 
 import com.ssafy.ozz.auth.auth.service.CustomOAuth2UserService;
-import com.ssafy.ozz.auth.global.filter.JWTFilter;
+import com.ssafy.ozz.auth.global.filter.GuestLoginFilter;
 import com.ssafy.ozz.auth.global.handler.CustomSuccessHandler;
-import com.ssafy.ozz.auth.global.util.JWTUtil;
-import jakarta.servlet.http.HttpServletRequest;
+import com.ssafy.ozz.auth.global.util.UserClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,11 +16,6 @@ import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationF
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-
-import java.util.Arrays;
-import java.util.Collections;
 
 @RequiredArgsConstructor
 @Configuration
@@ -30,7 +24,7 @@ public class SecurityConfig {
 
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomSuccessHandler customSuccessHandler;
-    private final JWTUtil jwtUtil;
+    private final UserClient userClient;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -94,6 +88,10 @@ public class SecurityConfig {
         http
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+        // 게스트 로그인 필터 추가
+        http.addFilterBefore(new GuestLoginFilter(userClient, customSuccessHandler), OAuth2LoginAuthenticationFilter.class);
+
         return http.build();
     }
 }

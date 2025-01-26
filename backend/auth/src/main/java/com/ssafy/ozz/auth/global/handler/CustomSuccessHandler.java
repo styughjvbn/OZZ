@@ -27,8 +27,15 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        CustomOAuth2User customUserDetails = (CustomOAuth2User) authentication.getPrincipal();
-        Long userId = customUserDetails.getId();
+        Long userId = -1L;
+        System.out.println(authentication);
+        if ( authentication.getPrincipal() instanceof CustomOAuth2User){
+            userId = ((CustomOAuth2User) authentication.getPrincipal()).getId();
+        }
+        if (authentication.getPrincipal() instanceof Long){
+            userId = (long)authentication.getPrincipal();
+        }
+        System.out.println("로그인 ID" + userId);
 
         // 유저 ID로 토큰 생성
         String access = jwtUtil.createJwt("access", userId, 60000000L); // User ID로 JWT 생성
@@ -48,15 +55,20 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         response.addCookie(refreshCookie);
 
         Optional<User> existingUser = userRepository.findById(userId);
-        if (existingUser.isPresent()) {
-            if (existingUser.get().getNickname() == null) { // 최초 로그인 한 사람이면 닉네임 변경 페이지로 이동
-                response.sendRedirect("https://i11a804.p.ssafy.io/login/signup");
-//                response.sendRedirect("http://localhost:3000/login/signup");
-                return;
-            }
+        System.out.println("로그인 ID" + existingUser.isPresent());
+        if (existingUser.isEmpty()) {
+            response.sendRedirect("http://localhost:3000/login");
+            return;
         }
-        response.sendRedirect("https://i11a804.p.ssafy.io/");
-//        response.sendRedirect("http://localhost:3000/");
-
+        if (existingUser.get().getIsGuest()){
+            response.sendRedirect("http://localhost:3000/");
+            System.out.println("게스트로그인 성공");
+            return;
+        }
+        if (existingUser.get().getNickname() == null) { // 최초 로그인 한 사람이면 닉네임 변경 페이지로 이동
+            response.sendRedirect("http://localhost:3000/login/signup");
+        }else {
+            response.sendRedirect("http://localhost:3000/");
+        }
     }
 }

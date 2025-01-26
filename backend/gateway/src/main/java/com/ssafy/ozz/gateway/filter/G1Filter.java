@@ -28,15 +28,11 @@ public class G1Filter implements GlobalFilter, Ordered {
         ServerHttpRequest request = exchange.getRequest();
         ServerHttpResponse response = exchange.getResponse();
         String path = request.getPath().toString();
-        System.out.println(path);
         // 경로가 허용된 경우
         for (String permission : PERMISSION_PATHS) {
             if (path.startsWith(permission)) {
                 return chain.filter(exchange);
             }
-        }
-        if (path.contains("/signup")){
-            return chain.filter(exchange);
         }
 
         // Authorization 헤더에서 토큰 추출

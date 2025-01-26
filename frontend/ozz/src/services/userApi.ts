@@ -6,6 +6,14 @@ import {
 } from '@/types/user/data-contracts'
 import { getUserApi, removeTokens } from './authApi'
 
+export const createGuest = async () => {
+  const userApi = getUserApi()
+  if (!userApi) throw new Error('User API not initialized')
+  const response = await userApi.getUserInfo()
+  const userInfo = await response.json()
+  return userInfo
+}
+
 export const getUserInfo = async () => {
   const userApi = getUserApi()
   if (!userApi) throw new Error('User API not initialized')
