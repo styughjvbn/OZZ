@@ -27,7 +27,7 @@ public class User {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false, unique = true)
+    @Column()
     private String phoneNumber;
 
     @Temporal(TemporalType.DATE)

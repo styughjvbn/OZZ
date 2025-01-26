@@ -7,6 +7,7 @@ import com.ssafy.ozz.user.global.auth.AuthClient;
 import com.ssafy.ozz.user.global.file.FileClient;
 import com.ssafy.ozz.user.global.file.dto.FeignFileInfo;
 import com.ssafy.ozz.user.global.file.exception.FileUploadException;
+import com.ssafy.ozz.user.service.GuestService;
 import com.ssafy.ozz.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -23,7 +24,6 @@ import java.util.Optional;
 
 import static com.ssafy.ozz.library.config.HeaderConfig.X_USER_ID;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static com.ssafy.ozz.library.config.HeaderConfig.X_USER_ID;
 
 @RequiredArgsConstructor
 @RestController
@@ -33,6 +33,14 @@ public class UserController {
     private final FileClient fileClient;
     private final AuthClient authClient;
     private final UserService userService;
+    private final GuestService guestService;
+
+    @PostMapping("/signup/guest")
+    @Operation(summary = "게스트 계정 생성")
+    public ResponseEntity<?> createGuest() {
+        User guestUser = guestService.createGuest();
+        return ResponseEntity.ok(guestUser);
+    }
 
     @GetMapping("/")
     @Operation(summary = "토큰으로 유저정보를 조회")
