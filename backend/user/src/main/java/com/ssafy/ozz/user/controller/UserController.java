@@ -38,8 +38,8 @@ public class UserController {
     @PostMapping("/signup/guest")
     @Operation(summary = "게스트 계정 생성")
     public ResponseEntity<?> createGuest() {
-        User guestUser = guestService.createGuest();
-        return ResponseEntity.ok(guestUser);
+        long guestUserId = guestService.createGuest();
+        return ResponseEntity.ok(guestUserId);
     }
 
     @GetMapping("/")
