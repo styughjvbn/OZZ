@@ -51,6 +51,22 @@ export default function SignIn() {
             네이버 로그인
           </span>
         </button>
+        <button
+          type="button"
+          onClick={()=>console.log("응애")}
+          className="w-full h-10 flex items-center bg-[#daf0a2] mx-3 rounded-md"
+        >
+          <Image
+            src="/images/logo_3e3e3e.png"
+            alt="게스트 로그인"
+            width={40} // 너비와 높이를 적절히 설정
+            height={40}
+            className="h-full object-contain"
+          />
+          <span className="flex-grow text-center text-black">
+            게스트 로그인
+          </span>
+        </button>
       </div>
     </div>
   )
