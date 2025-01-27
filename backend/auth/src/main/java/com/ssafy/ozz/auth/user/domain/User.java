@@ -38,6 +38,9 @@ public class User {
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDate;
 
+    @Column(name = "is_guest")
+    private Boolean isGuest;
+
     // 외래키
     @Column(name = "profile_file_id", nullable = true)
     private Long profileFileId;
