@@ -23,12 +23,6 @@ const hasOzzAccessToken = () => {
     .some((cookie) => cookie.trim().startsWith('access='))
 }
 
-const getOzzGuestLoginUrl = () => {
-  return window.location.hostname === 'localhost'
-    ? 'http://localhost:8000/login/guest'
-    : '/login/guest'
-}
-
 const hasMockCookie = () => {
   return document.cookie
     .split(';')
@@ -65,6 +59,17 @@ const isLocalhost = () => {
   return window.location.hostname === 'localhost'
 }
 
+const requestOzzDemoLogin = async () => {
+  const response = await fetch('/api/demo-guest-login', {
+    method: 'POST',
+    credentials: 'include',
+  })
+
+  if (!response.ok) {
+    throw new Error('Demo login failed')
+  }
+}
+
 export default function DemoAuthHeader() {
   const authClient = useMemo(() => {
     if (typeof window !== 'undefined' && isLocalhost()) {
@@ -86,14 +91,15 @@ export default function DemoAuthHeader() {
     ]
   }, [])
 
-  const syncOzzAuth = useCallback((nextMe: DemoMe) => {
+  const syncOzzAuth = useCallback(async (nextMe: DemoMe) => {
     const hasAccess = hasOzzAccessToken()
     const isSyncing = sessionStorage.getItem(SYNCING_KEY) === 'true'
 
     if (nextMe.loggedIn) {
       if (!hasAccess && !isSyncing) {
         sessionStorage.setItem(SYNCING_KEY, 'true')
-        window.location.href = getOzzGuestLoginUrl()
+        await requestOzzDemoLogin()
+        window.location.href = '/closet'
       } else {
         sessionStorage.removeItem(SYNCING_KEY)
       }

@@ -29,5 +29,6 @@ data:
   FILE_UPLOAD_DIR: "/data/uploads"
   FILE_HOST: "http://ozz-file:9000"
   CLOTHES_ENDPOINT: "http://ozz-clothes:8081"
+  USER_SERVICE_URL: "http://ozz-user:8082"
   GATEWAY_HOST: "http://ozz-gateway:8000"
   AI_HOST: "http://ozz-ai:5000"

@@ -21,6 +21,9 @@ CREATE TABLE `users` (
 	`phone_number`	varchar(255)	NULL
 );
 
+INSERT INTO `users` (`email`, `birth`, `nickname`, `profile_file_id`, `created_date`, `is_guest`, `name`, `phone_number`)
+VALUES ('demo@ozz.local', '2000-01-01', 'ozz-demo', NULL, CURRENT_TIMESTAMP, b'1', 'OZZ Demo', NULL);
+
 CREATE TABLE `board_like` (
 	`board_id`	bigint	NOT NULL,
 	`users_id`	bigint	NOT NULL,
@@ -133,6 +136,10 @@ ALTER TABLE `board` ADD CONSTRAINT `PK_BOARD` PRIMARY KEY (
 
 ALTER TABLE `users` ADD CONSTRAINT `PK_USERS` PRIMARY KEY (
 	`users_id`
+);
+
+ALTER TABLE `users` ADD CONSTRAINT `UK_USERS_EMAIL` UNIQUE (
+	`email`
 );
 
 ALTER TABLE `board_like` ADD CONSTRAINT `PK_BOARD_LIKE` PRIMARY KEY (

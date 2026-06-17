@@ -1,6 +1,7 @@
 'use client'
 
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import { FaArrowRight } from 'react-icons/fa'
 
 const DEMO_AUTH_URL =
@@ -8,13 +9,7 @@ const DEMO_AUTH_URL =
 
 const MOCK_COOKIE_NAME = 'sjw_demo_mock'
 
-const getOzzGuestLoginUrl = () => {
-  return window.location.hostname === 'localhost'
-    ? 'http://localhost:8000/login/guest'
-    : '/login/guest'
-}
-
-const startDemoLogin = async () => {
+const startDemoLogin = async (onSuccess: () => void) => {
   if (window.location.hostname === 'localhost') {
     document.cookie = `${MOCK_COOKIE_NAME}=local-demo; Max-Age=86400; path=/; SameSite=Lax`
   } else {
@@ -24,10 +19,21 @@ const startDemoLogin = async () => {
     })
   }
 
-  window.location.href = getOzzGuestLoginUrl()
+  const response = await fetch('/api/demo-guest-login', {
+    method: 'POST',
+    credentials: 'include',
+  })
+
+  if (!response.ok) {
+    throw new Error('Demo login failed')
+  }
+
+  onSuccess()
 }
 
 export default function StartPage() {
+  const router = useRouter()
+
   return (
     <div className="absolute top-0 bg-secondary h-screen w-full z-50 flex flex-col justify-center items-center gap-2">
       <Image
@@ -47,7 +53,7 @@ export default function StartPage() {
         <button
           type="button"
           className="relative bg-primary-400 rounded-full p-2 w-full flex items-center justify-center hover:bg-secondary hover:outline hover:outline-primary-400 hover:text-primary-400 transition duration-200"
-          onClick={startDemoLogin}
+          onClick={() => startDemoLogin(() => router.push('/closet'))}
         >
           <span className="font-bold text-lg">데모 로그인</span>
           <FaArrowRight className="absolute right-4" />

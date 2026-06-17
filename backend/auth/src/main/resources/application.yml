@@ -5,9 +5,9 @@ spring:
   application:
     name: ozz-auth
   datasource:
-    url: ${DB_URL}
-    username: ${DB_USER}
-    password: ${DB_PW}
+    url: ${DB_URL:jdbc:mysql://localhost:3307/ozz?serverTimezone=UTC}
+    username: ${DB_USER:root}
+    password: ${DB_PW:ssafy}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
@@ -25,6 +25,10 @@ eureka:
     register-with-eureka: true
     service-url:
       defaultZone: ${EUREKA_CLIENT_SERVICE_URL_DEFAULT_ZONE:http://localhost:8761/eureka}
+  instance:
+    hostname: ${EUREKA_INSTANCE_HOSTNAME:localhost}
+    prefer-ip-address: ${EUREKA_INSTANCE_PREFER_IP_ADDRESS:true}
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
 
 jwt:
   secret: ${JWT_SECRET:your-very-very-long-secret-key-that-is-at-least-32-bytes-long}
