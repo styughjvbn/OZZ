@@ -1,0 +1,116 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: elastic-synonyms
+data:
+  category_syn.txt: |
+    상의,top
+    하의,bottom
+    아우터,outer,outwear
+    원피스,one piece
+    신발,shoes
+    가방,bags
+  color_syn.txt: |
+    흰,흰색,화이트,white
+    검정,검은,블랙,black
+    회색,그레이,gray,grey
+  fit_syn.txt: |
+    오버,루즈,loose,baggy
+    레귤러,일반,regular
+    슬림,타이트,slim
+  pattern_syn.txt: |
+    무지,solid,plain
+    줄무늬,striped,stripe
+  season_syn.txt: |
+    봄,spring
+    여름,summer
+    가을,autumn,fall
+    겨울,winter
+  style_syn.txt: |
+    캐주얼,casual
+    클래식,classical
+    모던,modern
+  texture_syn.txt: |
+    니트,knit
+    데님,denim
+    면,cotton
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: elasticsearch
+spec:
+  ports:
+    - name: http
+      port: 9200
+      targetPort: 9200
+    - name: transport
+      port: 9300
+      targetPort: 9300
+  selector:
+    app: elasticsearch
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: elasticsearch
+spec:
+  serviceName: elasticsearch
+  replicas: 1
+  selector:
+    matchLabels:
+      app: elasticsearch
+  template:
+    metadata:
+      labels:
+        app: elasticsearch
+    spec:
+      initContainers:
+        - name: install-nori
+          image: docker.elastic.co/elasticsearch/elasticsearch:8.14.3
+          command: ["sh", "-c"]
+          args:
+            - |
+              bin/elasticsearch-plugin install --batch analysis-nori
+              cp -a plugins/analysis-nori /plugins/
+          volumeMounts:
+            - name: es-plugins
+              mountPath: /plugins
+      containers:
+        - name: elasticsearch
+          image: docker.elastic.co/elasticsearch/elasticsearch:8.14.3
+          ports:
+            - containerPort: 9200
+            - containerPort: 9300
+          env:
+            - name: discovery.type
+              value: single-node
+            - name: xpack.security.enabled
+              value: "false"
+            - name: xpack.security.enrollment.enabled
+              value: "false"
+            - name: xpack.license.self_generated.type
+              value: basic
+            - name: ES_JAVA_OPTS
+              value: -Xms512m -Xmx512m
+          volumeMounts:
+            - name: es-data
+              mountPath: /usr/share/elasticsearch/data
+            - name: es-plugins
+              mountPath: /usr/share/elasticsearch/plugins
+            - name: elastic-synonyms
+              mountPath: /usr/share/elasticsearch/config/synonym
+      volumes:
+        - name: es-plugins
+          emptyDir: {}
+        - name: elastic-synonyms
+          configMap:
+            name: elastic-synonyms
+  volumeClaimTemplates:
+    - metadata:
+        name: es-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 10Gi

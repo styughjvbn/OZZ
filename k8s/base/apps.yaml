@@ -1,0 +1,394 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: file-data
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ozz-eureka
+spec:
+  ports:
+    - name: http
+      port: 8761
+      targetPort: 8761
+  selector:
+    app: ozz-eureka
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ozz-eureka
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ozz-eureka
+  template:
+    metadata:
+      labels:
+        app: ozz-eureka
+    spec:
+      containers:
+        - name: ozz-eureka
+          image: ozz/eureka:dev
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8761
+          envFrom:
+            - configMapRef:
+                name: ozz-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ozz-file
+spec:
+  ports:
+    - name: http
+      port: 9000
+      targetPort: 9000
+  selector:
+    app: ozz-file
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ozz-file
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ozz-file
+  template:
+    metadata:
+      labels:
+        app: ozz-file
+    spec:
+      containers:
+        - name: ozz-file
+          image: ozz/file-server:dev
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 9000
+          envFrom:
+            - configMapRef:
+                name: ozz-config
+            - secretRef:
+                name: ozz-secret
+          volumeMounts:
+            - name: file-data
+              mountPath: /data/uploads
+      volumes:
+        - name: file-data
+          persistentVolumeClaim:
+            claimName: file-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ozz-auth
+spec:
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+  selector:
+    app: ozz-auth
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ozz-auth
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ozz-auth
+  template:
+    metadata:
+      labels:
+        app: ozz-auth
+    spec:
+      containers:
+        - name: ozz-auth
+          image: ozz/auth:dev
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: ozz-config
+            - secretRef:
+                name: ozz-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ozz-user
+spec:
+  ports:
+    - name: http
+      port: 8082
+      targetPort: 8082
+  selector:
+    app: ozz-user
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ozz-user
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ozz-user
+  template:
+    metadata:
+      labels:
+        app: ozz-user
+    spec:
+      containers:
+        - name: ozz-user
+          image: ozz/user:dev
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8082
+          envFrom:
+            - configMapRef:
+                name: ozz-config
+            - secretRef:
+                name: ozz-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ozz-clothes
+spec:
+  ports:
+    - name: http
+      port: 8081
+      targetPort: 8081
+  selector:
+    app: ozz-clothes
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ozz-clothes
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ozz-clothes
+  template:
+    metadata:
+      labels:
+        app: ozz-clothes
+    spec:
+      containers:
+        - name: ozz-clothes
+          image: ozz/clothes:dev
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8081
+          envFrom:
+            - configMapRef:
+                name: ozz-config
+            - secretRef:
+                name: ozz-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ozz-favorite
+spec:
+  ports:
+    - name: http
+      port: 8083
+      targetPort: 8083
+  selector:
+    app: ozz-favorite
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ozz-favorite
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ozz-favorite
+  template:
+    metadata:
+      labels:
+        app: ozz-favorite
+    spec:
+      containers:
+        - name: ozz-favorite
+          image: ozz/favorite:dev
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8083
+          envFrom:
+            - configMapRef:
+                name: ozz-config
+            - secretRef:
+                name: ozz-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ozz-board
+spec:
+  ports:
+    - name: http
+      port: 8084
+      targetPort: 8084
+  selector:
+    app: ozz-board
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ozz-board
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ozz-board
+  template:
+    metadata:
+      labels:
+        app: ozz-board
+    spec:
+      containers:
+        - name: ozz-board
+          image: ozz/board:dev
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8084
+          envFrom:
+            - configMapRef:
+                name: ozz-config
+            - secretRef:
+                name: ozz-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ozz-ai
+spec:
+  ports:
+    - name: http
+      port: 5000
+      targetPort: 5000
+  selector:
+    app: ozz-ai
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ozz-ai
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ozz-ai
+  template:
+    metadata:
+      labels:
+        app: ozz-ai
+    spec:
+      containers:
+        - name: ozz-ai
+          image: ozz/ai:dev
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5000
+          envFrom:
+            - configMapRef:
+                name: ozz-config
+            - secretRef:
+                name: ozz-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ozz-gateway
+spec:
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+  selector:
+    app: ozz-gateway
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ozz-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ozz-gateway
+  template:
+    metadata:
+      labels:
+        app: ozz-gateway
+    spec:
+      containers:
+        - name: ozz-gateway
+          image: ozz/gateway:dev
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: ozz-config
+            - secretRef:
+                name: ozz-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ozz-frontend
+spec:
+  ports:
+    - name: http
+      port: 3000
+      targetPort: 3000
+  selector:
+    app: ozz-frontend
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ozz-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ozz-frontend
+  template:
+    metadata:
+      labels:
+        app: ozz-frontend
+    spec:
+      containers:
+        - name: ozz-frontend
+          image: ozz/frontend:dev
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: ozz-config
+            - secretRef:
+                name: ozz-secret
