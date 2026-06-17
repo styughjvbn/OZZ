@@ -21,6 +21,7 @@ import { ImSpinner8 } from 'react-icons/im'
 import OutlineButton from '@/components/Button/OutlineButton'
 import { LuBrainCircuit } from 'react-icons/lu'
 import CoordiImage from '@/containers/coordi/CoordiImage'
+import { getApiUrl } from '@/services/apiBaseUrl'
 
 export interface CoordiItem {
   id: number
@@ -72,7 +73,7 @@ const fetchRecommendations = async ({
     style,
   }
 
-  const response = await fetch('https://i11a804.p.ssafy.io/api/ai/recommend', {
+  const response = await fetch(getApiUrl('/api/ai/recommend'), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

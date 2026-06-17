@@ -22,6 +22,7 @@ import {
   getClothesApi,
   getFileApi,
 } from '@/services/authApi'
+import { getApiUrl } from '@/services/apiBaseUrl'
 
 export async function fetchUserClothes(
   pageable: Pageable,
@@ -139,7 +140,7 @@ export const extractClothing = async (
   file: File | { filePath: string },
   highCategory: string,
 ) => {
-  const url = 'https://i11a804.p.ssafy.io/api/ai/attributes/extract'
+  const url = getApiUrl('/api/ai/attributes/extract')
   syncTokensWithCookies()
   validateAndRefreshToken()
 
