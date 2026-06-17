@@ -10,8 +10,6 @@ import { Api as ClothesApi } from '@/types/clothes/Api'
 import { Api as FileApi } from '@/types/file/Api'
 import cookie from 'cookie'
 
-const API_URL = 'http://localhost:8080'
-
 export interface Tokens {
   accessToken: string
   refreshToken: string
@@ -57,7 +55,7 @@ export const reissueToken = async () => {
 }
 
 export const redirectToLogin = () => {
-  window.location.href = '/login'
+  window.location.href = '/'
 }
 
 export const validateAndRefreshToken = async () => {
@@ -180,10 +178,6 @@ export const removeTokens = () => {
   favoriteApi = null
   clothesApi = null
   fileApi = null
-}
-
-export const login = async (provider: 'kakao' | 'naver') => {
-  window.location.href = `${API_URL}/oauth2/authorization/${provider}`
 }
 
 export const logout = async () => {

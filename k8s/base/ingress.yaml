@@ -22,13 +22,6 @@ spec:
                 name: ozz-gateway
                 port:
                   number: 8000
-          - path: /oauth2
-            pathType: Prefix
-            backend:
-              service:
-                name: ozz-gateway
-                port:
-                  number: 8000
           - path: /uploads
             pathType: Prefix
             backend:

@@ -4,6 +4,7 @@ import {
   DemoHeaderView,
   createDemoAuthClient,
   useDemoAuth,
+  type DemoAuthClient,
   type DemoMe,
   type DemoProject,
 } from '@sjw-project/demo-header'
@@ -12,6 +13,9 @@ import { removeTokens } from '@/services/authApi'
 
 const DEMO_AUTH_URL =
   process.env.NEXT_PUBLIC_DEMO_AUTH_URL || 'https://auth.sjw-project.site'
+
+const MOCK_COOKIE_NAME = 'sjw_demo_mock'
+const SYNCING_KEY = 'ozz-demo-login-syncing'
 
 const hasOzzAccessToken = () => {
   return document.cookie
@@ -25,10 +29,50 @@ const getOzzGuestLoginUrl = () => {
     : '/login/guest'
 }
 
-const SYNCING_KEY = 'ozz-demo-login-syncing'
+const hasMockCookie = () => {
+  return document.cookie
+    .split(';')
+    .some((cookie) => cookie.trim().startsWith(`${MOCK_COOKIE_NAME}=`))
+}
+
+const createLocalMockAuthClient = (): DemoAuthClient => {
+  return {
+    async fetchMe() {
+      return hasMockCookie()
+        ? {
+            loggedIn: true,
+            user: {
+              id: 'local-demo',
+              nickname: '로컬 데모',
+              role: 'DEMO',
+            },
+          }
+        : {
+            loggedIn: false,
+            user: null,
+          }
+    },
+    async login() {
+      document.cookie = `${MOCK_COOKIE_NAME}=local-demo; Max-Age=86400; path=/; SameSite=Lax`
+    },
+    async logout() {
+      document.cookie = `${MOCK_COOKIE_NAME}=; Max-Age=0; path=/`
+    },
+  }
+}
+
+const isLocalhost = () => {
+  return window.location.hostname === 'localhost'
+}
 
 export default function DemoAuthHeader() {
-  const authClient = useMemo(() => createDemoAuthClient(DEMO_AUTH_URL), [])
+  const authClient = useMemo(() => {
+    if (typeof window !== 'undefined' && isLocalhost()) {
+      return createLocalMockAuthClient()
+    }
+
+    return createDemoAuthClient(DEMO_AUTH_URL)
+  }, [])
 
   const projects = useMemo<DemoProject[]>(() => {
     const currentOrigin =
@@ -62,8 +106,8 @@ export default function DemoAuthHeader() {
     if (hasAccess) {
       removeTokens()
 
-      if (window.location.pathname !== '/login') {
-        window.location.href = '/login'
+      if (window.location.pathname !== '/') {
+        window.location.href = '/'
       }
     }
   }, [])

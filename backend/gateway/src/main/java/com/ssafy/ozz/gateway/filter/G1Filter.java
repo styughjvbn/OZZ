@@ -21,7 +21,7 @@ public class G1Filter implements GlobalFilter, Ordered {
 
     private final JWTUtil jwtUtil;
 
-    private static final String[] PERMISSION_PATHS = {"/login", "/oauth2", "/docs", "/v3/api-docs", "/swagger"};
+    private static final String[] PERMISSION_PATHS = {"/login/guest", "/docs", "/v3/api-docs", "/swagger"};
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {

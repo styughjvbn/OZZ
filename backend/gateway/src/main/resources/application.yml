@@ -81,7 +81,7 @@ spring:
         - id: auth-router
           uri : lb://OZZ-AUTH
           predicates:
-            - Path=/api/auth/**, /login/**, /login, /oauth2/**
+            - Path=/api/auth/**, /login/guest
         - id: auth-swagger
           uri : lb://OZZ-AUTH
           predicates:

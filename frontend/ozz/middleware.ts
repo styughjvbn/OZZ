@@ -7,7 +7,7 @@ export function middleware(request: NextRequest) {
   console.log('Middleware executed for path:', path)
 
   // 공개 경로 정의 (로그인이 필요 없는 경로)
-  const publicPaths = ['/login']
+  const publicPaths = ['/']
 
   // 현재 경로가 공개 경로인지 확인
   const isPublicPath = publicPaths.includes(path)
@@ -19,8 +19,8 @@ export function middleware(request: NextRequest) {
 
   // 로그인이 필요한 경로에 접근하려 하는데 토큰이 없는 경우
   if (!isPublicPath && !token) {
-    console.log('Redirecting to /login due to missing token.')
-    return NextResponse.redirect(new URL('/login', request.url))
+    console.log('Redirecting to / due to missing token.')
+    return NextResponse.redirect(new URL('/', request.url))
   }
 
   // 이미 로그인한 사용자가 로그인 페이지에 접근하려는 경우

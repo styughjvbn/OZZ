@@ -27,17 +27,19 @@ public class GuestLoginFilter extends OncePerRequestFilter {
             throws IOException, ServletException {
         // 게스트 로그인 요청 처리
         if ("/login/guest".equals(request.getRequestURI())) {
-            long guestUserId = userClient.createGuest().getBody();
-            // 1. 게스트 계정 정의
+            Long guestUserId = userClient.createGuest().getBody();
+            if (guestUserId == null) {
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                return;
+            }
+
             UsernamePasswordAuthenticationToken guestAuth = new UsernamePasswordAuthenticationToken(
-                    guestUserId, // 게스트 사용자 이름
-                    null // 비밀번호는 없음
+                    guestUserId,
+                    null
             );
 
-            // 2. SecurityContext에 인증 설정
             SecurityContextHolder.getContext().setAuthentication(guestAuth);
 
-            // 3. 인증 성공 핸들러 호출
             successHandler.onAuthenticationSuccess(request, response, guestAuth);
 
             return;

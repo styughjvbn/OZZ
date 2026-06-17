@@ -1,6 +1,5 @@
 package com.ssafy.ozz.auth.global.config;
 
-import com.ssafy.ozz.auth.auth.service.CustomOAuth2UserService;
 import com.ssafy.ozz.auth.global.filter.GuestLoginFilter;
 import com.ssafy.ozz.auth.global.handler.CustomSuccessHandler;
 import com.ssafy.ozz.auth.global.util.UserClient;
@@ -12,8 +11,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
@@ -22,7 +21,6 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomSuccessHandler customSuccessHandler;
     private final UserClient userClient;
 
@@ -51,24 +49,12 @@ public class SecurityConfig {
         //csrf -> jwt로 대체할 것이므로 disable
         http
                 .csrf(AbstractHttpConfigurer::disable);
-        //form login -> 소셜 로그인으로 대체
+        // form login은 데모 로그인으로 대체
         http
-                .formLogin(AbstractHttpConfigurer::disable)
-                .oauth2Login(AbstractHttpConfigurer::disable);
+                .formLogin(AbstractHttpConfigurer::disable);
         //HTTP Basic 인증 방식 disable
         http
                 .httpBasic(AbstractHttpConfigurer::disable);
-        //JWTFilter
-        // API Gateway에서 인가 작업을 하므로 auth controller에서는 skip
-//        http
-//                .addFilterBefore(new JWTFilter(jwtUtil), OAuth2LoginAuthenticationFilter.class);
-        //oauth2
-        http.oauth2Login((oauth2) -> oauth2
-                        .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
-                                .userService(customOAuth2UserService))
-                        .successHandler(customSuccessHandler)
-                );
-
         http.exceptionHandling(e->e
                 .defaultAuthenticationEntryPointFor(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED),
                         new AntPathRequestMatcher("/api/**"))
@@ -90,7 +76,7 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         // 게스트 로그인 필터 추가
-        http.addFilterBefore(new GuestLoginFilter(userClient, customSuccessHandler), OAuth2LoginAuthenticationFilter.class);
+        http.addFilterBefore(new GuestLoginFilter(userClient, customSuccessHandler), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

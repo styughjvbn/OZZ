@@ -1,4 +1,4 @@
-import SignIn from '@/containers/signin/login'
+import StartPage from '@/containers/main-page/StartPage'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 
@@ -10,5 +10,5 @@ export default function Home() {
     redirect('/closet')
   }
 
-  return <SignIn />
+  return <StartPage />
 }

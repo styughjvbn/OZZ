@@ -79,7 +79,7 @@ export default function MyPageIndex() {
     try {
       deleteAllCookies()
       // await logout()
-      router.push('/login')
+      router.push('/')
     } catch (error) {
       console.error('로그아웃 중 오류 발생:', error)
     }

@@ -186,7 +186,7 @@ function ProfileEdit() {
 
   const deleteAccount = () => {
     deleteUser()
-    router.push('/login')
+    router.push('/')
   }
 
   return (
