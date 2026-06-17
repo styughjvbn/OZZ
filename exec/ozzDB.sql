@@ -1,5 +1,5 @@
 CREATE TABLE `board` (
-	`board_id`	bigint	NOT NULL,
+	`board_id`	bigint	NOT NULL	AUTO_INCREMENT,
 	`content`	varchar(200)	NULL,
 	`created_date`	timestamp	NULL,
 	`image_file_id`	bigint	NOT NULL,
@@ -31,7 +31,7 @@ CREATE TABLE `board_like` (
 );
 
 CREATE TABLE `files` (
-	`file_id`	bigint	NOT NULL,
+	`file_id`	bigint	NOT NULL	AUTO_INCREMENT,
 	`path`	varchar(255)	NULL,
 	`name`	varchar(255)	NULL,
 	`type`	varchar(50)	NULL,
@@ -39,7 +39,7 @@ CREATE TABLE `files` (
 );
 
 CREATE TABLE `coordinate` (
-	`coordinate_id`	bigint	NOT NULL	COMMENT '코디 id',
+	`coordinate_id`	bigint	NOT NULL	AUTO_INCREMENT	COMMENT '코디 id',
 	`style`	bit(10)	NULL,
 	`name`	varchar(100)	NULL,
 	`low_temper`	float	NULL,
@@ -52,7 +52,7 @@ CREATE TABLE `coordinate` (
 );
 
 CREATE TABLE `clothes` (
-	`clothes_id`	bigint	NOT NULL,
+	`clothes_id`	bigint	NOT NULL	AUTO_INCREMENT,
 	`image_file_id`	bigint	NOT NULL,
 	`category_low_id`	tinyint	NOT NULL,
 	`users_id`	bigint	NOT NULL,
@@ -71,12 +71,12 @@ CREATE TABLE `clothes` (
 );
 
 CREATE TABLE `category_high` (
-	`category_high_id`	tinyint	NOT NULL,
+	`category_high_id`	tinyint	NOT NULL	AUTO_INCREMENT,
 	`name`	varchar(30)	NULL
 );
 
 CREATE TABLE `category_low` (
-	`category_low_id`	tinyint	NOT NULL,
+	`category_low_id`	tinyint	NOT NULL	AUTO_INCREMENT,
 	`name`	varchar(30)	NULL,
 	`category_high_id`	bigint	NOT NULL
 );
@@ -87,13 +87,13 @@ CREATE TABLE `favorite` (
 );
 
 CREATE TABLE `favorite_group` (
-	`favorite_group_id`	bigint	NULL,
+	`favorite_group_id`	bigint	NOT NULL	AUTO_INCREMENT,
 	`users_id`	bigint	NOT NULL,
 	`favorite_group_name`	varchar(255)	NOT NULL
 );
 
 CREATE TABLE `clothes_tag` (
-	`clothes_tag_id`	bigint	NOT NULL,
+	`clothes_tag_id`	bigint	NOT NULL	AUTO_INCREMENT,
 	`board_id`	bigint	NOT NULL,
 	`x_position`	float	NULL,
 	`y_position`	float	NULL,
@@ -107,7 +107,7 @@ CREATE TABLE `coordinate_clothes` (
 );
 
 CREATE TABLE `notification` (
-	`notification_id`	bigint	NOT NULL,
+	`notification_id`	bigint	NOT NULL	AUTO_INCREMENT,
 	`content`	varchar(200)	NULL,
 	`is_read`	tinyint	NULL,
 	`created_date`	timestamp	NULL,
@@ -116,7 +116,7 @@ CREATE TABLE `notification` (
 );
 
 CREATE TABLE `board_clothes` (
-	`board_clothes_id`	bigint	NOT NULL,
+	`board_clothes_id`	bigint	NOT NULL	AUTO_INCREMENT,
 	`image_file_id`	bigint	NOT NULL,
 	`category_low_id`	tinyint	NOT NULL,
 	`color`	bit(32)	NULL,
@@ -184,6 +184,51 @@ ALTER TABLE `coordinate_clothes` ADD CONSTRAINT `PK_COORDINATE_CLOTHES` PRIMARY 
 	`coordinate_id`,
 	`clothes_id`
 );
+
+INSERT INTO `category_high` (`category_high_id`, `name`) VALUES
+(1, '상의'),
+(2, '하의'),
+(3, '아우터'),
+(4, '원피스'),
+(5, '신발'),
+(6, '악세서리'),
+(7, '가방')
+ON DUPLICATE KEY UPDATE `name` = VALUES(`name`);
+
+INSERT INTO `category_low` (`category_low_id`, `name`, `category_high_id`) VALUES
+(1, '탑', 1),
+(2, '블라우스', 1),
+(3, '티셔츠', 1),
+(4, '니트웨어', 1),
+(5, '셔츠', 1),
+(6, '브라탑', 1),
+(7, '후드티', 1),
+(8, '청바지', 2),
+(9, '팬츠', 2),
+(10, '스커트', 2),
+(11, '레깅스', 2),
+(12, '조거팬츠', 2),
+(13, '코트', 3),
+(14, '재킷', 3),
+(15, '점퍼', 3),
+(16, '패딩', 3),
+(17, '베스트', 3),
+(18, '가디건', 3),
+(19, '짚업', 3),
+(20, '드레스', 4),
+(21, '점프수트', 4),
+(22, '운동화', 5),
+(23, '구두', 5),
+(24, '샌들', 5),
+(25, '주얼리', 6),
+(26, '기타', 6),
+(27, '모자', 6),
+(28, '가방', 7),
+(29, '백팩', 7),
+(30, '힙색', 7)
+ON DUPLICATE KEY UPDATE
+	`name` = VALUES(`name`),
+	`category_high_id` = VALUES(`category_high_id`);
 
 ALTER TABLE `notification` ADD CONSTRAINT `PK_NOTIFICATION` PRIMARY KEY (
 	`notification_id`

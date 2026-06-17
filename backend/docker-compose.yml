@@ -115,6 +115,10 @@ services:
       DB_URL: jdbc:mysql://mysql-db:3306/ozz
       DB_USER: ${DB_USER}
       DB_PW: ${DB_PW}
+      DEMO_ACCOUNT_EMAIL: ${DEMO_ACCOUNT_EMAIL:-demo@ozz.local}
+      DEMO_ACCOUNT_NAME: ${DEMO_ACCOUNT_NAME:-OZZ Demo}
+      DEMO_ACCOUNT_NICKNAME: ${DEMO_ACCOUNT_NICKNAME:-ozz-demo}
+      DEMO_ACCOUNT_BIRTH: ${DEMO_ACCOUNT_BIRTH:-2000-01-01}
     networks:
       - spring-cloud-network
     depends_on:
@@ -185,6 +189,8 @@ services:
       EUREKA_CLIENT_SERVICE_URL_DEFAULT_ZONE: http://ozz-eureka:8761/eureka/
       GATEWAY_HOST: http://ozz-gateway:${API_GATEWAY_PORT}
       AI_HOST: http://ozz-ai:${AI_PORT}
+      FRONT_HTTP_HOST: ${FRONT_HTTP_HOST:-http://localhost:3000}
+      FRONT_HTTPS_HOST: ${FRONT_HTTPS_HOST:-https://localhost:3000}
     networks:
       - spring-cloud-network
     depends_on:
