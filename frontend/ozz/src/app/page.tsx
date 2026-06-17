@@ -1,20 +1,14 @@
-import Header from '@/components/Header'
-import MainPageContainer from '@/containers/main-page/Container'
+import SignIn from '@/containers/signin/login'
 import { cookies } from 'next/headers'
-import StartPage from '@/containers/main-page/StartPage'
+import { redirect } from 'next/navigation'
 
 export default function Home() {
   const cookieStore = cookies()
   const accessToken = cookieStore.get('access')
 
-  if (!accessToken) {
-    return <StartPage />
+  if (accessToken) {
+    redirect('/closet')
   }
 
-  return (
-    <>
-      <Header title="OZZ" />
-      <MainPageContainer />
-    </>
-  )
+  return <SignIn />
 }

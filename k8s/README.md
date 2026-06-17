@@ -42,8 +42,7 @@ kubectl -n ozz logs deploy/ozz-gateway
 MySQL 초기 데이터가 필요하면 `exec/ozzDB.sql`을 실행 중인 MySQL Pod에 넣어 import합니다.
 
 ```bash
-kubectl -n ozz cp exec/ozzDB.sql mysql-db-0:/tmp/ozzDB.sql
-kubectl -n ozz exec -it mysql-db-0 -- mysql -uroot -p ozz -e "source /tmp/ozzDB.sql"
+kubectl -n ozz exec -i mysql-db-0 -- mysql -uroot -p ozz < exec/ozzDB.sql
 ```
 
 ## 주의할 점

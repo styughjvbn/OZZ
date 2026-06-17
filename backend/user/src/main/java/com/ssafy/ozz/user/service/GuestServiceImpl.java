@@ -16,13 +16,18 @@ public class GuestServiceImpl implements GuestService{
     @Transactional
     @Override
     public long createGuest() {
+        String guestEmail = "g"
+                + Long.toString(System.currentTimeMillis(), 36)
+                + Long.toString(System.nanoTime(), 36)
+                + "@o.zz";
+
         User guestUser = userRepository.save(User.builder()
                 .birth(new Date())
-                .email("guest@guest.com")
+                .email(guestEmail)
                 .name("guest")
                 .isGuest(true)
                 .build());
-        guestUser.updateNickname("guest"+guestUser.getId());
+        guestUser.updateNickname("guest" + guestUser.getId());
         return guestUser.getId();
     }
 }

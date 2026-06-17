@@ -1,31 +1,34 @@
 CREATE TABLE `board` (
-	`board_id`	long	NOT NULL,
+	`board_id`	bigint	NOT NULL,
 	`content`	varchar(200)	NULL,
 	`created_date`	timestamp	NULL,
-	`image_file_id`	long	NOT NULL,
-	`users_id`	long	NOT NULL,
+	`image_file_id`	bigint	NOT NULL,
+	`users_id`	bigint	NOT NULL,
 	`age`	int	NULL,
 	`style`	bit	NULL,
 	`numlikes`	int	NULL
 );
 
 CREATE TABLE `users` (
-	`users_id`	long	NOT NULL,
-	`email`	varchar(63)	NOT NULL	COMMENT '유저 이메일',
+	`users_id`	bigint	NOT NULL	AUTO_INCREMENT,
+	`email`	varchar(31)	NOT NULL	COMMENT '유저 이메일',
 	`birth`	date	NOT NULL	COMMENT '유저 생일',
 	`nickname`	varchar(15)	NULL	COMMENT '유저 닉네임',
-	`profile_file_id`	long	NOT NULL,
-	`created_date`	timestamp	NULL
+	`profile_file_id`	bigint	NULL,
+	`created_date`	timestamp	NULL,
+	`is_guest`	bit(1)	NULL,
+	`name`	varchar(255)	NOT NULL,
+	`phone_number`	varchar(255)	NULL
 );
 
 CREATE TABLE `board_like` (
-	`board_id`	long	NOT NULL,
-	`users_id`	long	NOT NULL,
+	`board_id`	bigint	NOT NULL,
+	`users_id`	bigint	NOT NULL,
 	`created_date`	timestamp	NULL
 );
 
 CREATE TABLE `files` (
-	`file_id`	long	NOT NULL,
+	`file_id`	bigint	NOT NULL,
 	`path`	varchar(255)	NULL,
 	`name`	varchar(255)	NULL,
 	`type`	varchar(50)	NULL,
@@ -33,23 +36,23 @@ CREATE TABLE `files` (
 );
 
 CREATE TABLE `coordinate` (
-	`coordinate_id`	long	NOT NULL	COMMENT '코디 id',
+	`coordinate_id`	bigint	NOT NULL	COMMENT '코디 id',
 	`style`	bit(10)	NULL,
 	`name`	varchar(100)	NULL,
 	`low_temper`	float	NULL,
 	`high_temper`	float	NULL,
 	`humidity`	tinyint	NULL,
-	`weather`	tinuint	NULL,
+	`weather`	tinyint	NULL,
 	`created_date`	timestamp	NULL,
-	`users_id`	long	NOT NULL,
-	`image_file_id`	long	NOT NULL
+	`users_id`	bigint	NOT NULL,
+	`image_file_id`	bigint	NOT NULL
 );
 
 CREATE TABLE `clothes` (
-	`clothes_id`	long	NOT NULL,
-	`image_file_id`	long	NOT NULL,
+	`clothes_id`	bigint	NOT NULL,
+	`image_file_id`	bigint	NOT NULL,
 	`category_low_id`	tinyint	NOT NULL,
-	`users_id`	long	NOT NULL,
+	`users_id`	bigint	NOT NULL,
 	`color`	bit(32)	NULL,
 	`name`	varchar(255)	NULL,
 	`size`	tinyint	NULL,
@@ -72,46 +75,46 @@ CREATE TABLE `category_high` (
 CREATE TABLE `category_low` (
 	`category_low_id`	tinyint	NOT NULL,
 	`name`	varchar(30)	NULL,
-	`category_high_id`	long	NOT NULL
+	`category_high_id`	bigint	NOT NULL
 );
 
 CREATE TABLE `favorite` (
-	`favorite_group_id`	long	NULL,
-	`coordinate_id`	long	NOT NULL	COMMENT '코디 id'
+	`favorite_group_id`	bigint	NULL,
+	`coordinate_id`	bigint	NOT NULL	COMMENT '코디 id'
 );
 
 CREATE TABLE `favorite_group` (
-	`favorite_group_id`	long	NULL,
-	`users_id`	long	NOT NULL,
-	`favorite_group_name`	varchar	NOT NULL
+	`favorite_group_id`	bigint	NULL,
+	`users_id`	bigint	NOT NULL,
+	`favorite_group_name`	varchar(255)	NOT NULL
 );
 
 CREATE TABLE `clothes_tag` (
-	`clothes_tag_id`	long	NOT NULL,
-	`board_id`	long	NOT NULL,
+	`clothes_tag_id`	bigint	NOT NULL,
+	`board_id`	bigint	NOT NULL,
 	`x_position`	float	NULL,
 	`y_position`	float	NULL,
-	`board_clothes_id`	long	NOT NULL
+	`board_clothes_id`	bigint	NOT NULL
 );
 
 CREATE TABLE `coordinate_clothes` (
-	`coordinate_id`	long	NOT NULL	COMMENT '코디 id',
-	`clothes_id`	long	NOT NULL,
+	`coordinate_id`	bigint	NOT NULL	COMMENT '코디 id',
+	`clothes_id`	bigint	NOT NULL,
 	`offset`	tinyint	NULL
 );
 
 CREATE TABLE `notification` (
-	`notification_id`	long	NOT NULL,
+	`notification_id`	bigint	NOT NULL,
 	`content`	varchar(200)	NULL,
 	`is_read`	tinyint	NULL,
 	`created_date`	timestamp	NULL,
-	`users_id`	long	NOT NULL,
-	`board_id`	long	NOT NULL
+	`users_id`	bigint	NOT NULL,
+	`board_id`	bigint	NOT NULL
 );
 
 CREATE TABLE `board_clothes` (
-	`board_clothes_id`	long	NOT NULL,
-	`image_file_id`	long	NOT NULL,
+	`board_clothes_id`	bigint	NOT NULL,
+	`image_file_id`	bigint	NOT NULL,
 	`category_low_id`	tinyint	NOT NULL,
 	`color`	bit(32)	NULL,
 	`name`	varchar(255)	NULL,
@@ -224,4 +227,3 @@ ALTER TABLE `coordinate_clothes` ADD CONSTRAINT `FK_clothes_TO_coordinate_clothe
 REFERENCES `clothes` (
 	`clothes_id`
 );
-

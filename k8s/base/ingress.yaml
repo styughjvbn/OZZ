@@ -15,7 +15,7 @@ spec:
                 name: ozz-gateway
                 port:
                   number: 8000
-          - path: /login
+          - path: /login/guest
             pathType: Prefix
             backend:
               service:
