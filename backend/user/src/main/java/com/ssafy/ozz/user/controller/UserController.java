@@ -42,7 +42,7 @@ public class UserController {
         return ResponseEntity.ok(guestUserId);
     }
 
-    @GetMapping("/")
+    @GetMapping({"", "/"})
     @Operation(summary = "토큰으로 유저정보를 조회")
     public ResponseEntity<?> getUserInfo(@Parameter(hidden = true) @RequestHeader(X_USER_ID) Long userId) {
         Optional<User> userOptional = userService.getUserById(userId);
@@ -66,7 +66,7 @@ public class UserController {
         }
     }
 
-    @PutMapping("/")
+    @PutMapping({"", "/"})
     @Operation(summary = "토큰으로 유저정보 수정")
     public ResponseEntity<?> updateUser(@Parameter(hidden = true) @RequestHeader(X_USER_ID) Long userId, @RequestBody UserUpdateRequest updates) {
         Optional<User> userOptional = userService.getUserById(userId);
@@ -116,7 +116,7 @@ public class UserController {
         }
     }
 
-    @PatchMapping("/")
+    @PatchMapping({"", "/"})
     @Operation(summary = "프로필 이미지 삭제")
     public ResponseEntity<?> deleteProfileImage(
             @Parameter(hidden = true) @RequestHeader(X_USER_ID) Long userId) {
@@ -139,7 +139,7 @@ public class UserController {
     }
 
 
-    @DeleteMapping("/")
+    @DeleteMapping({"", "/"})
     @Operation(summary = "회원 탈퇴")
     public ResponseEntity<?> deleteUser(@Parameter(hidden = true) @RequestHeader(X_USER_ID) Long userId) {
 

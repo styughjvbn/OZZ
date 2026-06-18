@@ -29,6 +29,8 @@ export default function MyPageIndex() {
   const [user, setUser] = useState<any>(null)
   const [profileSrc, setProfileSrc] = useState('')
   const [loading, setLoading] = useState(true)
+  const nickname = user?.nickname || '사용자'
+  const email = user?.email || ''
 
   const getProfilePic = async (picId: number) => {
     try {
@@ -51,6 +53,11 @@ export default function MyPageIndex() {
     const fetchUserInfo = async () => {
       try {
         const userInfo = await getUserInfo()
+        if (!userInfo) {
+          router.push('/')
+          return
+        }
+
         setUser(userInfo)
         if (userInfo.profileFileId) {
           await getProfilePic(userInfo.profileFileId)
@@ -110,12 +117,12 @@ export default function MyPageIndex() {
             )}
             <div className="ml-4 flex-1">
               <div
-                className={`bg-secondary text-primary-400 font-bold ${user.nickname.length > 12 ? 'text-base' : 'text-xl'} inline-block`}
+                className={`bg-secondary text-primary-400 font-bold ${nickname.length > 12 ? 'text-base' : 'text-xl'} inline-block`}
               >
-                {user.nickname}
+                {nickname}
               </div>
               <span className="font-bold text-xl">님</span>
-              <div className="text-secondary text-sm">{user.email}</div>
+              <div className="text-secondary text-sm">{email}</div>
             </div>
             <FaChevronRight onClick={goEdit} className="w-7 fill-[#CCCED0]" />
           </div>
