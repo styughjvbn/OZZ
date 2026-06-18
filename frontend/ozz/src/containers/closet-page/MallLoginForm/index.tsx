@@ -1,121 +1,66 @@
 'use client'
 
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
 import Loading from '@/app/closet/loading'
 import Image from 'next/image'
 import AlertModal from '@/components/Modal/AlertModal'
 
-const FormSchema = z.object({
-  userId: z.string().min(1, { message: '아이디를 입력해 주세요.' }),
-  password: z.string().min(1, { message: '비밀번호를 입력해 주세요.' }),
-})
-
-export function InputForm({ mall }: { mall: string }) {
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
-    defaultValues: {
-      userId: '',
-      password: '',
-    },
-  })
+export function DemoImportForm({ mall }: { mall: string }) {
   const router = useRouter()
-  const [isLoading, setIsLoading] = useState(false) // 로딩 상태 추가
+  const [isLoading, setIsLoading] = useState(false)
   const [isAlertOpen, setIsAlertOpen] = useState(false)
   const [alertMessage, setAlertMessage] = useState<string[]>([])
 
-  async function onSubmit(data: z.infer<typeof FormSchema>) {
-    setIsLoading(true) // 요청 시작 시 로딩 상태를 true로 설정
+  async function onSubmit() {
+    setIsLoading(true)
+
     try {
       const response = await fetch(`/apis/${mall}-login`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
       })
-
       const result = await response.json()
-      // console.log(result)
 
       if (result.error) {
-        // alert(result.error)
-        setAlertMessage(['다시 시도해주세요'])
+        setAlertMessage(['추천 상품을', '가져오지 못했습니다.'])
         setIsAlertOpen(true)
-
-        setIsLoading(false) // 에러 발생 시 로딩 상태를 false로 설정
-      } else {
-        router.push('/closet')
+        setIsLoading(false)
+        return
       }
-    } catch (error) {
-      // alert('아이디 또는 비밀번호를 확인하세요.')
-      setAlertMessage(['아이디 또는', ' 비밀번호를 확인하세요.'])
-      setIsAlertOpen(true)
 
-      setIsLoading(false) // 에러 발생 시 로딩 상태를 false로 설정
+      router.push('/closet')
+    } catch (error) {
+      setAlertMessage(['추천 상품을', '가져오지 못했습니다.'])
+      setIsAlertOpen(true)
+      setIsLoading(false)
     }
   }
 
   if (isLoading) {
-    return <Loading /> // 로딩 중일 때 로딩 컴포넌트를 표시
-  }
-
-  const handleAlertClose = () => {
-    setIsAlertOpen(false)
+    return <Loading />
   }
 
   return (
-    /* eslint-disable react/jsx-props-no-spreading */
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-3">
-        <FormField
-          control={form.control}
-          name="userId"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                {/* eslint-disable-next-line react/jsx-props-no-spreading */}
-                <Input placeholder="아이디 (이메일)" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <Input type="password" placeholder="비밀번호" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <button
-          type="submit"
-          className="bg-black text-white rounded-sm py-2 w-full"
-        >
-          로그인
-        </button>
-      </form>
+    <div className="w-2/3 space-y-4">
+      <p className="text-sm leading-5 text-neutral-600">
+        데모에서는 실제 무신사 로그인을 사용하지 않고, 무신사 실시간 추천 상품
+        10개를 구매내역처럼 가져옵니다.
+      </p>
+      <button
+        type="button"
+        onClick={onSubmit}
+        className="bg-black text-white rounded-sm py-2 w-full"
+      >
+        추천 상품 가져오기
+      </button>
 
       {isAlertOpen && (
-        <AlertModal onClose={handleAlertClose} messages={alertMessage} />
+        <AlertModal
+          onClose={() => setIsAlertOpen(false)}
+          messages={alertMessage}
+        />
       )}
-    </Form>
+    </div>
   )
 }
 
@@ -133,8 +78,8 @@ export default function MallLoginForm({ mall }: { mall: string }) {
         />
         에서 옷 가져오기
       </div>
-      <h1 className="text-lg my-3">로그인</h1>
-      <InputForm mall={mall} />
+      <h1 className="text-lg my-3">데모 가져오기</h1>
+      <DemoImportForm mall={mall} />
     </div>
   )
 }
