@@ -102,6 +102,20 @@ const getSeason = (month: number): string => {
 }
 
 const API_KEY = process.env.OPENWEATHERMAP_API_KEY
+const createDemoWeather = () => {
+  const today = new Date()
+
+  return {
+    dayOfWeek: format(today, 'EEE', { locale: ko }),
+    date: format(today, 'MM/dd'),
+    minTemp: 20,
+    maxTemp: 27,
+    description: '맑음',
+    humidity: 55,
+    icon: 'clear.png',
+    season: getSeason(today.getMonth() + 1),
+  }
+}
 
 // eslint-disable-next-line import/prefer-default-export
 export async function GET(request: Request) {
@@ -115,33 +129,32 @@ export async function GET(request: Request) {
       { status: 400 },
     )
   }
-  const url = `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&exclude=current,minutely,hourly,alerts&appid=${API_KEY}&units=metric`
+
+  if (!API_KEY) {
+    return NextResponse.json(createDemoWeather())
+  }
+
+  const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`
 
   const response = await fetch(url)
 
   if (!response.ok) {
-    return NextResponse.json(
-      { error: 'Failed to fetch weather data' },
-      { status: 500 },
-    )
+    return NextResponse.json(createDemoWeather())
   }
 
   const data = await response.json()
-  const weatherData = data.daily.slice(0, 7).map((day: any) => {
-    const date = new Date(day.dt * 1000)
-    const weatherId = day.weather[0].id
-
-    return {
-      dayOfWeek: format(date, 'EEE', { locale: ko }),
-      date: format(date, 'MM/dd'),
-      minTemp: Math.round(day.temp.min),
-      maxTemp: Math.round(day.temp.max),
-      description: getWeatherDescription(weatherId),
-      humidity: day.humidity,
-      icon: getWeatherIcon(day.weather[0]),
-      season: getSeason(date.getMonth() + 1),
-    }
-  })
+  const date = new Date(data.dt * 1000)
+  const weatherId = data.weather[0].id
+  const weatherData = {
+    dayOfWeek: format(date, 'EEE', { locale: ko }),
+    date: format(date, 'MM/dd'),
+    minTemp: Math.round(data.main.temp_min),
+    maxTemp: Math.round(data.main.temp_max),
+    description: getWeatherDescription(weatherId),
+    humidity: data.main.humidity,
+    icon: getWeatherIcon(data.weather[0]),
+    season: getSeason(date.getMonth() + 1),
+  }
 
   return NextResponse.json(weatherData)
 }

@@ -27,8 +27,8 @@ interface DailyWeather {
 }
 
 interface WeatherContextType {
-  weather: DailyWeather[] | null
-  setWeather: (weather: DailyWeather[]) => void
+  weather: DailyWeather | null
+  setWeather: (weather: DailyWeather) => void
   selectedWeather: DailyWeather | null
   setSelectedWeather: (weather: DailyWeather) => void
   error: string | null
@@ -37,13 +37,14 @@ interface WeatherContextType {
 }
 
 const WeatherContext = createContext<WeatherContextType | undefined>(undefined)
+const DEFAULT_LOCATION: Location = {
+  latitude: 37.5665,
+  longitude: 126.978,
+}
 
 export function WeatherProvider({ children }: { children: ReactNode }) {
-  const [location, setLocation] = useState<Location>({
-    latitude: 37.5665, // 서울의 위도
-    longitude: 126.978, // 서울의 경도
-  })
-  const [weather, setWeather] = useState<DailyWeather[] | null>(null)
+  const [location, setLocation] = useState<Location>(DEFAULT_LOCATION)
+  const [weather, setWeather] = useState<DailyWeather | null>(null)
   const [selectedWeather, setSelectedWeather] = useState<DailyWeather | null>(
     null,
   )
@@ -72,13 +73,16 @@ export function WeatherProvider({ children }: { children: ReactNode }) {
 
   const fetchLocationAndWeather = useCallback(async () => {
     try {
-      const currentPosition = await getLocation()
-      if (
-        currentPosition.latitude !== null &&
-        currentPosition.longitude !== null
-      ) {
-        setLocation(currentPosition)
+      let currentPosition = DEFAULT_LOCATION
+
+      try {
+        currentPosition = await getLocation()
+      } catch {
+        currentPosition = DEFAULT_LOCATION
       }
+
+      setLocation(currentPosition)
+      setError(null)
 
       const response = await fetch(
         `/apis/weather?lat=${currentPosition.latitude}&lon=${currentPosition.longitude}`,
@@ -90,12 +94,12 @@ export function WeatherProvider({ children }: { children: ReactNode }) {
       }
 
       const weatherData = await response.json()
-      const formattedWeatherData = weatherData.map((day: any) => ({
-        ...day,
-        date: new Date(day.date),
-      }))
+      const formattedWeatherData = {
+        ...weatherData,
+        date: new Date(weatherData.date),
+      }
       setWeather(formattedWeatherData)
-      setSelectedWeather(formattedWeatherData[0])
+      setSelectedWeather(formattedWeatherData)
     } catch (err: any) {
       setError(err.message)
     }
