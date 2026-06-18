@@ -1,3 +1,5 @@
+SET NAMES utf8mb4;
+
 CREATE TABLE `board` (
 	`board_id`	bigint	NOT NULL	AUTO_INCREMENT,
 	`content`	varchar(200)	NULL,
@@ -60,7 +62,7 @@ CREATE TABLE `clothes` (
 	`name`	varchar(255)	NULL,
 	`size`	tinyint	NULL,
 	`fit`	tinyint	NULL,
-	`texture`	bit(20)	NULL,
+	`texture`	bit(32)	NULL,
 	`memo`	varchar(255)	NULL,
 	`brand`	varchar(50)	NULL,
 	`purchase_date`	timestamp	NULL,

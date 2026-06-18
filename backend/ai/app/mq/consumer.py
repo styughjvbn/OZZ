@@ -62,7 +62,11 @@ def EAcallback(ch, method, properties, body):
             # PUT 요청 보내기
             mp_encoder = MultipartEncoder(
                 fields={
-                    "request": ('request', json.dumps(attr_data), 'application/json')
+                    "request": (
+                        'request',
+                        json.dumps(attr_data, ensure_ascii=False).encode('utf-8'),
+                        'application/json; charset=utf-8'
+                    )
                 }
             )
             # PUT 요청 보내기
@@ -74,7 +78,11 @@ def EAcallback(ch, method, properties, body):
                 "imgUrl": key_to_imgurl[key],
                 "isOnlyItem": attr_data["isOnlyItem"],
             }
-            ch.basic_publish(exchange='', routing_key="image-process", body=json.dumps(image_metadata))
+            ch.basic_publish(
+                exchange='',
+                routing_key="image-process",
+                body=json.dumps(image_metadata, ensure_ascii=False).encode('utf-8')
+            )
 
             # 응답 출력
             logging.info(response)

@@ -136,8 +136,14 @@ services:
       - CLOTHES_ENDPOINT=http://ozz-clothes:${CLOTHES_PORT}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - FILE_HOST=http://ozz-file:${FILE_PORT}
+      - IMAGE_PROCESS_MODE=${IMAGE_PROCESS_MODE:-modal}
+      - MODAL_IMAGE_PROCESS_APP=${MODAL_IMAGE_PROCESS_APP:-ozz-image-process}
+      - MODAL_IMAGE_PROCESS_FUNCTION=${MODAL_IMAGE_PROCESS_FUNCTION:-process_image}
+      - MODAL_PROFILE=${MODAL_PROFILE:-lsrffzb}
     ports:
       - ${AI_PORT}:${AI_PORT}
+    volumes:
+      - ${HOME}/.modal.toml:/root/.modal.toml:ro
     networks:
       - message-queue-network
       - spring-cloud-network

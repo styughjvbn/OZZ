@@ -1,4 +1,5 @@
 use ozz;
+SET NAMES utf8mb4;
 
 -- Insert into category_high
 INSERT INTO category_high (name) VALUES ('상의');

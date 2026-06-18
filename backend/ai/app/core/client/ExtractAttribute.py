@@ -83,7 +83,7 @@ Please return it in JSON format as in the following example.
     def get_response(self) -> dict[Any, Any]:
         user_content: list = self.make_user_content()
         response = self.client.chat.completions.create(
-            model="gpt-4o",
+            model="gpt-5.1",
             response_format={"type": "json_object"},
             messages=[
                 {
@@ -101,7 +101,7 @@ Please return it in JSON format as in the following example.
                 },
             ],
             temperature=0,
-            max_tokens=75 * len(user_content),
+            max_completion_tokens=75 * len(user_content),
             top_p=0.9,
             frequency_penalty=0,
             presence_penalty=0

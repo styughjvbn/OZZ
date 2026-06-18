@@ -78,7 +78,7 @@ If you created an outfit, `result` is "success" and write the outfit information
 
     def get_response(self):
         response = self.client.beta.chat.completions.parse(
-            model="gpt-4o-2024-08-06",
+            model="gpt-5.1",
             response_format=ChatGPTOutfitRecommendation,
             messages=[
                 {
@@ -96,7 +96,7 @@ If you created an outfit, `result` is "success" and write the outfit information
                 },
             ],
             temperature=1,
-            max_tokens=4000,
+            max_completion_tokens=4000,
             top_p=1,
             frequency_penalty=0,
             presence_penalty=0
@@ -187,7 +187,7 @@ Example result:
 
     def get_response(self):
         response = self.client.chat.completions.create(
-            model="gpt-4o",
+            model="gpt-5.1",
             response_format={"type": "json_object"},
             messages=[
                 {
@@ -205,7 +205,7 @@ Example result:
                 },
             ],
             temperature=1,
-            max_tokens=4000,
+            max_completion_tokens=4000,
             top_p=1,
             frequency_penalty=0,
             presence_penalty=0
