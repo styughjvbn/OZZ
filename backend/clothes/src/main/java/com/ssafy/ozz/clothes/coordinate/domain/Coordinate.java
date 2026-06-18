@@ -40,6 +40,7 @@ public class Coordinate {
     private List<CoordinateClothes> coordinateClothesList;
 
     /* FOREIGN KEY */
+    @Column(name = "users_id")
     private Long userId;
     private Long imageFileId;
 

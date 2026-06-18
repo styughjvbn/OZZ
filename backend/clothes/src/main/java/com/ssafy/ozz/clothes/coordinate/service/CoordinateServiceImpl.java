@@ -105,7 +105,7 @@ public class CoordinateServiceImpl implements CoordinateService {
     public Slice<CoordinateBasicResponse> searchCoordinates(CoordinateSearchCondition condition, Pageable pageable) {
         return coordinateRepository.findByCondition(condition, pageable).map(coordinate -> {
             FileInfo fileInfo = fileClient.getFile(coordinate.getImageFileId()).orElseThrow(FileNotFoundException::new);
-            return new CoordinateBasicResponse(coordinate, fileInfo);
+            return CoordinateBasicResponse.of(coordinate, fileInfo);
         });
     }
 

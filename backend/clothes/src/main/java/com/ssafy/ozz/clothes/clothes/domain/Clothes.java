@@ -78,7 +78,7 @@ public class Clothes {
     @JoinColumn(name="category_low_id")
     CategoryLow categoryLow;
 
-    @Column
+    @Column(name = "users_id")
     Long userId;
 
     @Column

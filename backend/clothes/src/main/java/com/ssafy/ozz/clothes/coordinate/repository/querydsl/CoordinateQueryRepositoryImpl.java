@@ -43,6 +43,17 @@ public class CoordinateQueryRepositoryImpl extends Querydsl4RepositorySupport<Co
         );
     }
 
+    @Override
+    public Page<Coordinate> findByCondition(CoordinateSearchCondition condition, Pageable pageable) {
+        return applyPagination(pageable,
+                selectFrom(coordinate)
+                        .where(
+                                styleOr(toBits(condition.styleList())),
+                                nameContainKeyword(condition.keyword())
+                        )
+        );
+    }
+
     public BooleanExpression userIdEq(Long userId){
         return userId != null ? coordinate.userId.eq(userId) : null;
     }

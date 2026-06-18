@@ -10,4 +10,5 @@ import java.util.List;
 public interface CoordinateQueryRepository{
     List<Coordinate> findByUserId(Long userId, CoordinateSearchCondition condition);
     Page<Coordinate> findByUserId(Long userId, CoordinateSearchCondition condition, Pageable pageable);
+    Page<Coordinate> findByCondition(CoordinateSearchCondition condition, Pageable pageable);
 }

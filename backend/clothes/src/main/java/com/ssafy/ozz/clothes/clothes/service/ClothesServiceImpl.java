@@ -3,10 +3,8 @@ package com.ssafy.ozz.clothes.clothes.service;
 import com.ssafy.ozz.clothes.category.domain.CategoryLow;
 import com.ssafy.ozz.clothes.category.service.CategoryService;
 import com.ssafy.ozz.clothes.clothes.domain.Clothes;
-import com.ssafy.ozz.clothes.clothes.domain.ClothesDocument;
 import com.ssafy.ozz.clothes.clothes.dto.request.*;
 import com.ssafy.ozz.clothes.clothes.dto.response.*;
-import com.ssafy.ozz.clothes.clothes.repository.elasticsearch.ClothesSearchRepository;
 import com.ssafy.ozz.clothes.clothes.repository.jpa.ClothesRepository;
 import com.ssafy.ozz.clothes.coordinate.repository.jpa.CoordinateClothesRepository;
 import com.ssafy.ozz.clothes.global.fegin.file.FileClient;
@@ -17,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.elasticsearch.core.RefreshPolicy;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,8 +26,6 @@ import reactor.core.publisher.Sinks;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-
 import static com.ssafy.ozz.library.util.EnumBitwiseConverter.toBits;
 
 @Service
@@ -39,7 +34,6 @@ import static com.ssafy.ozz.library.util.EnumBitwiseConverter.toBits;
 @Slf4j
 public class ClothesServiceImpl implements ClothesService {
     private final ClothesRepository clothesRepository;
-    private final ClothesSearchRepository clothesSearchRepository;
     private final CategoryService categoryService;
     private final FileClient fileClient;
     private final WebClient webClient;
@@ -64,7 +58,7 @@ public class ClothesServiceImpl implements ClothesService {
         if(condition.keyword() == null || condition.keyword().isEmpty()){
             return clothesRepository.findByUserId(userId, condition, pageable).map(this::toClothesBasicWithFileResponse);
         }else{
-            return clothesRepository.findByCondition(userId, condition, pageable).map(this::toClothesBasicWithFileResponse);
+            return clothesRepository.findByUserId(userId, condition, pageable).map(this::toClothesBasicWithFileResponse);
         }
     }
 
@@ -89,7 +83,6 @@ public class ClothesServiceImpl implements ClothesService {
         FileInfo fileInfo = fileClient.uploadFile(imageFile).orElseThrow(FileNotFoundException::new);
         Long imageFileId = fileInfo.fileId();
         Clothes clothes = clothesRepository.save(request.toEntity(categoryLow,imageFileId,userId));
-        clothesSearchRepository.save(new ClothesDocument(clothes));
         return clothes;
     }
 
@@ -130,13 +123,6 @@ public class ClothesServiceImpl implements ClothesService {
             fileInfo = fileClient.getFile(clothes.getImageFileId()).orElseThrow();
         }
 
-        Optional<ClothesDocument> optionalDocument = clothesSearchRepository.findById(clothesId);
-        if (optionalDocument.isPresent()) {
-            ClothesDocument document = optionalDocument.get();
-            document.update(clothes);
-            clothesRepository.update(document);
-        }
-
         return new ClothesWithFileResponse(clothes, fileInfo);
     }
 
@@ -147,18 +133,11 @@ public class ClothesServiceImpl implements ClothesService {
         clothes.updateImageFile(fileInfo.fileId());
         clothes.updateProcessing(-1);
 
-        Optional<ClothesDocument> optionalDocument = clothesSearchRepository.findById(clothesId);
-        if (optionalDocument.isPresent()) {
-            ClothesDocument document = optionalDocument.get();
-            document.update(clothes);
-            clothesRepository.update(document);
-        }
         return clothesId;
     }
 
     @Override
     public void deleteClothes(Long clothesId) {
-        clothesSearchRepository.deleteById(clothesId);
         coordinateClothesRepository.deleteAllByClothes_ClothesId(clothesId);
         clothesRepository.deleteById(clothesId);
     }
@@ -218,23 +197,11 @@ public class ClothesServiceImpl implements ClothesService {
         return sink.asFlux();
     }
 
-    /* Elasticsearch */
+    /* Demo search: QueryDSL fallback instead of Elasticsearch */
     @Override
     @Transactional(readOnly = true)
     public Slice<ClothesBasicWithFileResponse> searchClothes(ClothesSearchCondition condition, Pageable pageable) {
-        return clothesRepository.findByCondition(condition, pageable).map(this::toClothesBasicWithFileResponse);
-    }
-
-    private ClothesBasicWithFileResponse toClothesBasicWithFileResponse(ClothesDocument clothes) {
-        FileInfo fileInfo = null;
-        if (clothes.getImageFileId() != null) {
-            fileInfo = fileClient.getFile(clothes.getImageFileId()).orElseThrow(FileNotFoundException::new);
-        }
-        CategoryLow categoryLow = null;
-        if (clothes.getCategoryLowId() != null) {
-            categoryLow = categoryService.getCategoryLow(clothes.getCategoryLowId());
-        }
-        return new ClothesBasicWithFileResponse(clothes, categoryLow, fileInfo);
+        return clothesRepository.findByUserId(null, condition, pageable).map(this::toClothesBasicWithFileResponse);
     }
 
     private ClothesBasicWithFileResponse toClothesBasicWithFileResponse(Clothes clothes) {
