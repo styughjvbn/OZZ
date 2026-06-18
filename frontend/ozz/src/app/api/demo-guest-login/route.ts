@@ -4,6 +4,7 @@ const getAuthUrl = () => {
   return process.env.OZZ_AUTH_URL || 'http://localhost:8080'
 }
 
+// eslint-disable-next-line import/prefer-default-export
 export async function POST() {
   const authResponse = await fetch(`${getAuthUrl()}/login/guest`, {
     redirect: 'manual',

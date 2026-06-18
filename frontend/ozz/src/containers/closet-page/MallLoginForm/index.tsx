@@ -120,17 +120,9 @@ export function InputForm({ mall }: { mall: string }) {
 }
 
 export default function MallLoginForm({ mall }: { mall: string }) {
-  const styles: { [key: string]: string } = {
-    musinsa: 'bg-black text-white',
-    ably: 'border-y-2',
-    zigzag: 'bg-[#FA6EE3]',
-  }
-
   return (
     <div className="flex flex-col justify-center items-center">
-      <div
-        className={`my-1 w-full h-10 px-6 py-2 flex items-center justify-center ${styles[mall]}`}
-      >
+      <div className="my-1 w-full h-10 px-6 py-2 flex items-center justify-center bg-black text-white">
         <Image
           src={`/images/malls/logo_${mall}.png`}
           alt={mall.toUpperCase()}

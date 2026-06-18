@@ -10,12 +10,6 @@ const nextConfig = {
       },
     ],
   },
-  experimental: {
-    serverComponentsExternalPackages: [
-      'puppeteer-extra',
-      'puppeteer-extra-plugin-stealth',
-    ],
-  },
   async rewrites() {
     return [
       {
