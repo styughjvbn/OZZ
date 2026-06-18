@@ -6,6 +6,8 @@ import Loading from '@/app/closet/loading'
 import Image from 'next/image'
 import AlertModal from '@/components/Modal/AlertModal'
 
+const IMPORT_TIMEOUT_MS = 45000
+
 export function DemoImportForm({ mall }: { mall: string }) {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
@@ -14,24 +16,32 @@ export function DemoImportForm({ mall }: { mall: string }) {
 
   async function onSubmit() {
     setIsLoading(true)
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), IMPORT_TIMEOUT_MS)
 
     try {
       const response = await fetch(`/apis/${mall}-login`, {
         method: 'POST',
+        signal: controller.signal,
       })
       const result = await response.json()
 
-      if (result.error) {
+      if (!response.ok || result.error) {
         setAlertMessage(['추천 상품을', '가져오지 못했습니다.'])
         setIsAlertOpen(true)
-        setIsLoading(false)
         return
       }
 
       router.push('/closet')
     } catch (error) {
-      setAlertMessage(['추천 상품을', '가져오지 못했습니다.'])
+      setAlertMessage(
+        error instanceof DOMException && error.name === 'AbortError'
+          ? ['추천 상품 가져오기가', '시간 초과되었습니다.']
+          : ['추천 상품을', '가져오지 못했습니다.'],
+      )
       setIsAlertOpen(true)
+    } finally {
+      clearTimeout(timeout)
       setIsLoading(false)
     }
   }
