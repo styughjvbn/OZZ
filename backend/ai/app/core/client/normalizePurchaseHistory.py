@@ -21,7 +21,9 @@ Examples of <purchase history>:
  
 Result: 
 Please give me the order of the given purchase history in JSON format. 
-- Category: If it cannot be expressed as a value corresponding to the <Possible values>, it is not a fashion item, so return "None". 
+- Category: Choose the closest value from <Possible values> for fashion products. Use "None" only for clearly non-fashion products such as storage boxes, cosmetics, electronics, books, food, or household goods.
+- Sneakers, running shoes, model names such as XT-6, boots, loafers, sandals, and other footwear are "shoes".
+- Caps, hats, jewelry, belts, scarves, socks, and small fashion goods are "accessory".
 <Possible values>top, bottom, outerwear, dress, shoes, bag, accessory<Possible values> 
 - name: If the product name includes color or size, please exclude it. 
 - color: Provide only if it is a fashion item. If color exists in both the name and the option, prioritize the option. 
@@ -33,10 +35,11 @@ The <index> of a purchase history group starts at 0 and increases by 1 (e.g. 0,1
  
 Example results: 
 { 
-"<index>":{ 
+"0":[
 {"category":"bottom", "name":"8부 데님 버뮤다팬츠", "color":"라이트블루"}, 
 {"category":"top", "name":"shawl mood knit", "color":"바이올렛"}, 
-{"category":"None", "name":"오데일리 접이식 속옷 정리함 12칸 손잡이형 2개"}} 
+{"category":"None", "name":"오데일리 접이식 속옷 정리함 12칸 손잡이형 2개"}
+]
 }
 """
     purchase_histories: list[PurchaseHistory]
@@ -60,7 +63,7 @@ Example results:
                     "content": [
                         {
                             "type": "text",
-                            "text": "Your role: \nI will give you a <purchase history>. The <purchase history> consists of the product name and product options. \nDistinguish the category, color of this product with the product name and product options. \n \nExamples of <purchase history>: \n{\"name\": \"8부 데님 버뮤다팬츠 - 3COLOR\", \"option\": \"1번(S) : 라이트블루\"}\n{\"name\": \"shawl mood knit (5colors)\", \"option\": \"바이올렛, 선택없음\"}\n{\"name\": \"오데일리 접이식 속옷 정리함 12칸 손잡이형 2개\", \"option\": \"화이트, free\"} \n \nResult: \nPlease give me the order of the given purchase history in JSON format. \n- Category: If it cannot be expressed as a value corresponding to the <Possible values>, it is not a fashion item, so return \"None\". \n<Possible values>top, bottom, outerwear, dress, shoes, bag, accessory<Possible values> \n- name: If the product name includes color or size, please exclude it. \n- color: Provide only if it is a fashion item. If color exists in both the name and the option, prioritize the option. \n \nResult format: \nPurchase history is grouped into one <index> for every 10 purchase histories.\nPurchase history with 10 or fewer remaining purchases is grouped into one <index>.\nThe <index> of a purchase history group starts at 0 and increases by 1 (e.g. 0,1,2,...)\n \nExample results: \n{ \n\"<index>\":{ \n{\"category\":\"bottom\", \"name\":\"8부 데님 버뮤다팬츠\", \"color\":\"라이트블루\"}, \n{\"category\":\"top\", \"name\":\"shawl mood knit\", \"color\":\"바이올렛\"}, \n{\"category\":\"None\", \"name\":\"오데일리 접이식 속옷 정리함 12칸 손잡이형 2개\"}} \n}"
+                            "text": NormalizePurchaseHistory.system_prompt
                         }
                     ]
                 },
@@ -72,7 +75,7 @@ Example results:
                 }
             ],
             temperature=0,
-            max_tokens=50 * len(self.purchase_histories),
+            max_tokens=80 * len(self.purchase_histories),
             top_p=0.9,
             frequency_penalty=0,
             presence_penalty=0,

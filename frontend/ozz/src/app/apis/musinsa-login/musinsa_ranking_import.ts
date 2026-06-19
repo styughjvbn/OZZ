@@ -19,7 +19,7 @@ const GOODS_API_URL = 'https://api.musinsa.com/api2/dp/v1/goods'
 const OPTIONS_API_TEMPLATE =
   'https://goods-detail.musinsa.com/api2/goods/{goodsNo}/options'
 
-const IMPORT_SIZE = 10
+const IMPORT_SIZE = 3
 
 /**
  * PurchaseHistory describes the shape expected by the ClothesApi. It
@@ -240,7 +240,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       ok: true,
       message:
-        '실시간 무신사 랭킹 상품 10개를 추출하여 구매내역처럼 가져왔습니다. 옵션 정보는 API에서 추출한 실제 값입니다.',
+        '실시간 무신사 랭킹 상품 3개를 추출하여 구매내역처럼 가져왔습니다. 옵션 정보는 API에서 추출한 실제 값입니다.',
       importedCount: purchaseHistory.length,
       response,
     })

@@ -6,7 +6,7 @@ import Loading from '@/app/closet/loading'
 import Image from 'next/image'
 import AlertModal from '@/components/Modal/AlertModal'
 
-const IMPORT_TIMEOUT_MS = 45000
+const IMPORT_TIMEOUT_MS = 120000
 
 export function DemoImportForm({ mall }: { mall: string }) {
   const router = useRouter()
@@ -54,7 +54,7 @@ export function DemoImportForm({ mall }: { mall: string }) {
     <div className="w-2/3 space-y-4">
       <p className="text-sm leading-5 text-neutral-600">
         데모에서는 실제 무신사 로그인을 사용하지 않고, 무신사 실시간 추천 상품
-        10개를 구매내역처럼 가져옵니다.
+        3개를 AI가 자동 분석해 가져옵니다.
       </p>
       <button
         type="button"

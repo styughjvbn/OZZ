@@ -1,14 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
-import type { ClothesCreateRequest } from '@/types/clothes/data-contracts'
 
 const RANKING_URL =
   'https://client.musinsa.com/api/home/web/v5/pans/ranking?storeCode=musinsa&sectionId=199&skip_bf=Y&gf=A&contentsId=&categoryCode=000&ageBand=AGE_BAND_ALL'
 const GOODS_API_URL = 'https://api.musinsa.com/api2/dp/v1/goods'
 const OPTIONS_API_URL = 'https://goods-detail.musinsa.com/api2/goods'
-const IMPORT_SIZE = 10
+const IMPORT_SIZE = 3
 const API_GATEWAY_URL = process.env.API_GATEWAY_URL || 'http://localhost:8000'
-const DEFAULT_CATEGORY_LOW_ID = 1
 const REQUEST_TIMEOUT_MS = 15000
+const BATCH_TIMEOUT_MS = 120000
 const BROWSER_HEADERS = {
   accept: 'application/json',
   'user-agent':
@@ -29,13 +28,6 @@ interface GoodsDetail {
   goodsName: string
   brandName: string
   imageUrl: string
-}
-
-interface ClothesImportResult {
-  ok: boolean
-  name: string
-  status?: number
-  error?: string
 }
 
 const isRecord = (value: unknown): value is Record<string, unknown> => {
@@ -225,112 +217,43 @@ const withTimeout = async <T>(
   }
 }
 
-const getImageUrl = (imageUrl: string) => {
-  if (imageUrl.startsWith('//')) return `https:${imageUrl}`
-  return imageUrl
-}
-
-const getFileName = (imageUrl: string) => {
-  try {
-    const { pathname } = new URL(getImageUrl(imageUrl))
-    return pathname.split('/').pop() || 'musinsa-item.jpg'
-  } catch {
-    return 'musinsa-item.jpg'
-  }
-}
-
-const createClothesRequest = (
-  purchaseHistory: PurchaseHistory,
-): ClothesCreateRequest => ({
-  name: purchaseHistory.name,
-  size: 'FREE',
-  memo: purchaseHistory.option,
-  brand: purchaseHistory.brand,
-  purchaseDate: purchaseHistory.purchaseDate,
-  purchaseSite: purchaseHistory.purchaseSite,
-  colorList: ['BLACK'],
-  textureList: [],
-  seasonList: [],
-  styleList: ['CASUAL'],
-  patternList: [],
-  categoryLowId: DEFAULT_CATEGORY_LOW_ID,
-  extra: purchaseHistory.option,
-})
-
-const createClothes = async (
-  purchaseHistory: PurchaseHistory,
-  accessToken: string,
-) => {
-  const imageResponse = await withTimeout((signal) =>
-    fetch(getImageUrl(purchaseHistory.imgUrl), {
-      cache: 'no-store',
-      headers: BROWSER_HEADERS,
-      signal,
-    }),
-  )
-
-  if (!imageResponse.ok) {
-    throw new Error('Failed to fetch Musinsa item image')
-  }
-
-  const imageBlob = await imageResponse.blob()
-  const formData = new FormData()
-  formData.append('imageFile', imageBlob, getFileName(purchaseHistory.imgUrl))
-  formData.append(
-    'request',
-    new Blob([JSON.stringify(createClothesRequest(purchaseHistory))], {
-      type: 'application/json',
-    }),
-  )
-
-  const response = await withTimeout((signal) =>
-    fetch(`${API_GATEWAY_URL}/api/clothes`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-      body: formData,
-      signal,
-    }),
-  )
-
-  if (!response.ok) {
-    const message = await response.text()
-    throw new Error(message || 'Failed to create clothes')
-  }
-
-  return response.status
-}
-
 const sendPurchaseHistoryToServer = async (
   purchaseHistory: PurchaseHistory[],
   accessToken: string,
 ) => {
-  const results: ClothesImportResult[] = await Promise.all(
-    purchaseHistory.map(async (item) => {
-      try {
-        const status = await createClothes(item, accessToken)
-        return { ok: true, name: item.name, status }
-      } catch (error) {
-        return {
-          ok: false,
-          name: item.name,
-          error: error instanceof Error ? error.message : 'Unknown error',
-        }
-      }
-    }),
+  const response = await withTimeout(
+    (signal) =>
+      fetch(`${API_GATEWAY_URL}/api/clothes/batch`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(purchaseHistory),
+        signal,
+      }),
+    BATCH_TIMEOUT_MS,
   )
 
-  const importedCount = results.filter((result) => result.ok).length
+  if (!response.ok) {
+    const message = await response.text()
+    throw new Error(message || 'Failed to send purchase history to the server')
+  }
 
-  if (importedCount === 0) {
-    throw new Error('Failed to import Musinsa ranking items')
+  const reader = response.body?.getReader()
+
+  if (reader) {
+    await withTimeout(async () => {
+      await reader.read()
+    }, BATCH_TIMEOUT_MS)
+    reader.releaseLock()
+    await response.body?.cancel()
   }
 
   return {
-    importedCount,
-    failedCount: results.length - importedCount,
-    results,
+    importedCount: purchaseHistory.length,
+    failedCount: 0,
+    responseStatus: response.status,
   }
 }
 
@@ -356,7 +279,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       ok: true,
       message:
-        '실시간 무신사 랭킹 상품 10개를 추출하여 구매내역처럼 가져왔습니다.',
+        '실시간 무신사 랭킹 상품 3개를 추출하여 구매내역처럼 가져왔습니다.',
       importedCount: response.importedCount,
       failedCount: response.failedCount,
       response,

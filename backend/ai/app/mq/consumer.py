@@ -71,6 +71,8 @@ def EAcallback(ch, method, properties, body):
             )
             # PUT 요청 보내기
             response = requests.put(url, data=mp_encoder, headers={"Content-Type": mp_encoder.content_type})
+            if not response.ok:
+                logging.error(f"속성 등록 실패 status={response.status_code}, body={response.text}")
 
             image_metadata={
                 "clothId": key,
