@@ -97,6 +97,7 @@ public class CoordinateServiceImpl implements CoordinateService {
 
     @Override
     public void deleteCoordinate(Long coordinateId) {
+        coordinateRepository.deleteFavoritesByCoordinateId(coordinateId);
         coordinateClothesRepository.deleteAll(coordinateClothesRepository.findByCoordinateId(coordinateId));
         coordinateRepository.deleteById(coordinateId);
     }

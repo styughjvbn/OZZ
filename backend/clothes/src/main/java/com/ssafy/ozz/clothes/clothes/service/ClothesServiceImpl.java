@@ -33,6 +33,8 @@ import static com.ssafy.ozz.library.util.EnumBitwiseConverter.toBits;
 @Transactional
 @Slf4j
 public class ClothesServiceImpl implements ClothesService {
+    private static final byte DEMO_BATCH_DEFAULT_CATEGORY_LOW_ID = 1;
+
     private final ClothesRepository clothesRepository;
     private final CategoryService categoryService;
     private final FileClient fileClient;
@@ -174,10 +176,11 @@ public class ClothesServiceImpl implements ClothesService {
                 .flatMap(response->{
                     int index= response.index()*batchSize;
                     List<ExtractAttribute> extractAttributes = new ArrayList<>();
+                    CategoryLow defaultCategoryLow = categoryService.getCategoryLow(DEMO_BATCH_DEFAULT_CATEGORY_LOW_ID);
                     for (NormalizedItem item : response.data()) {
                         if(item.category()!=null){
                             PurchaseHistory purchaseHistory=purchaseHistories.get(index);
-                            Clothes normalizedHistory = purchaseHistory.toEntity(userId,item.name());
+                            Clothes normalizedHistory = purchaseHistory.toEntity(userId,item.name(), defaultCategoryLow);
                             Long clothId = clothesRepository.save(normalizedHistory).getClothesId();
                             ExtractAttribute temp=item.toExtractAttribute(clothId, purchaseHistory.imgUrl());
                             extractAttributes.add(temp);
@@ -192,7 +195,11 @@ public class ClothesServiceImpl implements ClothesService {
                     sink.tryEmitNext(ServerSentEvent.builder((int)Math.ceil(progress)+"%").build());
                 })
                 .doOnComplete(sink::tryEmitComplete)
-                .subscribe();
+                .doOnError(error -> {
+                    log.error("구매내역 배치 등록 중 오류", error);
+                    sink.tryEmitError(error);
+                })
+                .subscribe(progress -> {}, error -> {});
 
         return sink.asFlux();
     }
