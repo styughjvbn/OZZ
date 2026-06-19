@@ -94,7 +94,7 @@ export default function SelectOptions() {
             {selectedItem ? (
               <div className="flex flex-col items-center">
                 <Image
-                  src={selectedItem.imageUrl}
+                  src={selectedItem.imageUrl ?? '/images/mockup/tops11.png'}
                   alt={selectedItem.name}
                   width={50}
                   height={50}

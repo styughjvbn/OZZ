@@ -3,7 +3,9 @@
 import { createContext, useContext, useState, ReactNode, useMemo } from 'react'
 import { ClothesBasicWithFileResponse } from '@/types/clothes/data-contracts'
 
-export type ClothingItem = ClothesBasicWithFileResponse & { imageUrl: string }
+export type ClothingItem = ClothesBasicWithFileResponse & {
+  imageUrl: string | null
+}
 
 interface SelectedItemContextType {
   selectedItem: ClothingItem | null

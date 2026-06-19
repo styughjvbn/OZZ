@@ -525,6 +525,8 @@ export interface ClothesBasicWithFileResponse {
   /** 하위 카테고리 정보 DTO */
   categoryLow?: CategoryLowResponse
   imageFile: FileInfo | null
+  /** @format int32 */
+  processing?: number
 }
 
 export interface SliceClothesBasicWithFileResponse {

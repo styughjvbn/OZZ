@@ -92,7 +92,9 @@ export default function UserCloset({
 
   const clothingWithImages = clothingList.map((item, index) => ({
     ...item,
-    imageUrl: imageResults[index]?.data || defaultImageUrl,
+    imageUrl: item.imageFile
+      ? imageResults[index]?.data || defaultImageUrl
+      : null,
   }))
 
   if (isLoading) return <Loading />

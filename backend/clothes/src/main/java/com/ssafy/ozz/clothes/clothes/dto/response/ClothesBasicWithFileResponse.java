@@ -15,7 +15,8 @@ public record ClothesBasicWithFileResponse(
         String name,
         LocalDateTime createdDate,
         CategoryLowResponse categoryLow,
-        FileInfo imageFile
+        FileInfo imageFile,
+        Integer processing
         ) {
     public ClothesBasicWithFileResponse(Clothes clothes, FileInfo fileInfo) {
         this(
@@ -23,7 +24,8 @@ public record ClothesBasicWithFileResponse(
                 clothes.getName(),
                 clothes.getCreatedDate(),
                 CategoryLowResponse.of(clothes.getCategoryLow()),
-                fileInfo
+                fileInfo,
+                clothes.getProcessing()
         );
     }
     public ClothesBasicWithFileResponse(ClothesDocument clothes, CategoryLow categoryLow, FileInfo fileInfo) {
@@ -32,7 +34,8 @@ public record ClothesBasicWithFileResponse(
                 clothes.getName(),
                 clothes.getCreatedDate(),
                 CategoryLowResponse.of(categoryLow),
-                fileInfo
+                fileInfo,
+                0
         );
     }
 }

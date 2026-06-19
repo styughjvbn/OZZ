@@ -4,7 +4,7 @@ import { useSelectedItem } from '@/contexts/SelectedItemContext'
 import { ClothesBasicWithFileResponse } from '@/types/clothes/data-contracts'
 
 interface ClothesListProps {
-  clothingList: (ClothesBasicWithFileResponse & { imageUrl: string })[]
+  clothingList: (ClothesBasicWithFileResponse & { imageUrl: string | null })[]
   isSelectable: boolean
 }
 
@@ -20,13 +20,38 @@ export default function ClothesList({
   const { selectedItem, setSelectedItem } = useSelectedItem()
 
   const handleSelectItem = (
-    item: ClothesBasicWithFileResponse & { imageUrl: string },
+    item: ClothesBasicWithFileResponse & { imageUrl: string | null },
   ) => {
     if (selectedItem && selectedItem.clothesId === item.clothesId) {
       setSelectedItem(null)
     } else {
       setSelectedItem(item)
     }
+  }
+
+  const renderClothesImage = (
+    item: ClothesBasicWithFileResponse & { imageUrl: string | null },
+  ) => {
+    const isImageProcessing = !item.imageFile && (item.processing ?? 0) > 0
+
+    if (isImageProcessing) {
+      return (
+        <div className="mr-4 flex h-[75px] w-[75px] shrink-0 items-center justify-center bg-gray-100 px-2 text-center text-xs font-medium text-gray-500">
+          이미지 처리중
+        </div>
+      )
+    }
+
+    return (
+      <Image
+        src={item.imageUrl ?? '/images/mockup/tops11.png'}
+        alt={item.name ?? 'No name'}
+        width={75}
+        height={75}
+        className="mr-4 aspect-square object-contain"
+        priority
+      />
+    )
   }
 
   return (
@@ -44,14 +69,7 @@ export default function ClothesList({
             onClick={() => handleSelectItem(item)}
           >
             <div className="flex items-center mb-4 mt-4">
-              <Image
-                src={item.imageUrl}
-                alt={item.name ?? 'No name'}
-                width={75}
-                height={75}
-                className="mr-4 aspect-square object-contain"
-                priority
-              />
+              {renderClothesImage(item)}
               <div>
                 <div className="text-sm text-gray-500">
                   {item.createdDate
@@ -73,14 +91,7 @@ export default function ClothesList({
             className="px-5 w-full hover:bg-primary-100 active:bg-primary-100  transition duration-150"
           >
             <div className="flex items-center mb-4 mt-4 cursor-pointer">
-              <Image
-                src={item.imageUrl ?? '/images/mockup/tops11.png'}
-                alt={item.name ?? 'No name available'}
-                width={75}
-                height={75}
-                className="mr-4 aspect-square object-contain"
-                priority
-              />
+              {renderClothesImage(item)}
               <div>
                 <div className="text-sm text-gray-500">
                   {item.createdDate

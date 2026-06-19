@@ -5,11 +5,13 @@ import { useRouter } from 'next/navigation'
 import Loading from '@/app/closet/loading'
 import Image from 'next/image'
 import AlertModal from '@/components/Modal/AlertModal'
+import { useQueryClient } from '@tanstack/react-query'
 
 const IMPORT_TIMEOUT_MS = 120000
 
 export function DemoImportForm({ mall }: { mall: string }) {
   const router = useRouter()
+  const queryClient = useQueryClient()
   const [isLoading, setIsLoading] = useState(false)
   const [isAlertOpen, setIsAlertOpen] = useState(false)
   const [alertMessage, setAlertMessage] = useState<string[]>([])
@@ -32,6 +34,8 @@ export function DemoImportForm({ mall }: { mall: string }) {
         return
       }
 
+      await queryClient.invalidateQueries({ queryKey: ['userClothes'] })
+      await queryClient.invalidateQueries({ queryKey: ['image'] })
       router.push('/closet')
     } catch (error) {
       setAlertMessage(

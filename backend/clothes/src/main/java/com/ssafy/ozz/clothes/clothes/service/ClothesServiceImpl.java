@@ -51,7 +51,7 @@ public class ClothesServiceImpl implements ClothesService {
     @Override
     public ClothesWithFileResponse getClothesWithFile(Long clothesId){
         Clothes clothes = getClothes(clothesId);
-        return new ClothesWithFileResponse(clothes,fileClient.getFile(clothes.getImageFileId()).orElseThrow(FileNotFoundException::new));
+        return new ClothesWithFileResponse(clothes, getFileInfoOrNull(clothes.getImageFileId()));
     }
 
     @Override
@@ -115,14 +115,13 @@ public class ClothesServiceImpl implements ClothesService {
     @Override
     public ClothesWithFileResponse updateClothes(Long clothesId, ClothesUpdateRequest request, MultipartFile imageFile) {
         Clothes clothes = updateClothes(clothesId, request);
-        FileInfo fileInfo;
+        FileInfo fileInfo = null;
         if(imageFile != null){
             // 이미지 파일 수정
             fileInfo = fileClient.uploadFile(imageFile).orElseThrow();
             clothes.updateImageFile(fileInfo.fileId());
-        }else{
-            // 기존 이미지 파일 불러오기
-            fileInfo = fileClient.getFile(clothes.getImageFileId()).orElseThrow();
+        } else {
+            fileInfo = getFileInfoOrNull(clothes.getImageFileId());
         }
 
         return new ClothesWithFileResponse(clothes, fileInfo);
@@ -212,10 +211,13 @@ public class ClothesServiceImpl implements ClothesService {
     }
 
     private ClothesBasicWithFileResponse toClothesBasicWithFileResponse(Clothes clothes) {
-        FileInfo fileInfo = null;
-        if (clothes.getImageFileId() != null) {
-            fileInfo = fileClient.getFile(clothes.getImageFileId()).orElseThrow(FileNotFoundException::new);
+        return new ClothesBasicWithFileResponse(clothes, getFileInfoOrNull(clothes.getImageFileId()));
+    }
+
+    private FileInfo getFileInfoOrNull(Long imageFileId) {
+        if (imageFileId == null || imageFileId <= 0) {
+            return null;
         }
-        return new ClothesBasicWithFileResponse(clothes, fileInfo);
+        return fileClient.getFile(imageFileId).orElse(null);
     }
 }
