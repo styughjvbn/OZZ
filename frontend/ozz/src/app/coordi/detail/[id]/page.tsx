@@ -101,7 +101,7 @@ export default function SavedCoordiPage({
   }
 
   const updateCoordi = () => {
-    router.push('/fix')
+    router.push(`/coordi/fix?id=${params.id}`)
   }
 
   // 코디 데이터 및 이미지 가져오기
@@ -129,7 +129,7 @@ export default function SavedCoordiPage({
   const deleteCoordi = async () => {
     try {
       const res = await deleteCoordinate(Number(params.id))
-      if (res.status === 200) {
+      if (res.ok) {
         // console.log('삭제 완료')
         setToastMessage('삭제 완료')
         router.push('/book')
