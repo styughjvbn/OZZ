@@ -7,7 +7,6 @@ resources:
   - namespace.yaml
   - configmap.yaml
   - infra.yaml
-  - elastic.yaml
   - apps.yaml
   - ingress.yaml
 

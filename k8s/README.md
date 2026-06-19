@@ -49,4 +49,6 @@ kubectl -n ozz exec -i mysql-db-0 -- mysql -uroot -p ozz < exec/ozzDB.sql
 
 - `k8s/base/secret.example.yaml`은 샘플입니다. 실제 키를 저장소에 커밋하지 마세요.
 - 프론트 코드 일부 생성 API 클라이언트에 예전 도메인 또는 `localhost:8000` 기본값이 남아 있습니다. 운영 호스트에서 API 호출이 실패하면 해당 baseUrl을 상대 경로 또는 현재 도메인 기반으로 정리해야 합니다.
-- ElasticSearch synonym 파일은 ConfigMap에 최소 예시만 넣어두었습니다. 검색 품질을 그대로 유지하려면 `backend/es/elasticsearch/config/synonym` 내용을 ConfigMap으로 확장하세요.
+- 데모 기본 배포에서는 메모리 절약을 위해 Elasticsearch, Kibana, Logstash를 제외합니다. 검색은 DB 기반 fallback을 사용합니다.
+- 각 Pod에는 단일 노드 k3s 데모용 memory request/limit이 설정되어 있습니다. OOMKill이 발생하면 `kubectl -n ozz describe pod <pod>`로 확인한 뒤 해당 서비스의 limit을 올리세요.
+- Spring Boot 서비스는 컨테이너 limit 안에서 동작하도록 `JAVA_TOOL_OPTIONS=-XX:InitialRAMPercentage=40 -XX:MaxRAMPercentage=65`를 사용합니다.

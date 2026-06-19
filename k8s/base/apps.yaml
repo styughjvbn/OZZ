@@ -40,9 +40,18 @@ spec:
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8761
+          env:
+            - name: JAVA_TOOL_OPTIONS
+              value: "-XX:InitialRAMPercentage=40 -XX:MaxRAMPercentage=65"
           envFrom:
             - configMapRef:
                 name: ozz-config
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 512Mi
 ---
 apiVersion: v1
 kind: Service
@@ -76,11 +85,20 @@ spec:
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 9000
+          env:
+            - name: JAVA_TOOL_OPTIONS
+              value: "-XX:InitialRAMPercentage=40 -XX:MaxRAMPercentage=65"
           envFrom:
             - configMapRef:
                 name: ozz-config
             - secretRef:
                 name: ozz-secret
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 512Mi
           volumeMounts:
             - name: file-data
               mountPath: /data/uploads
@@ -121,11 +139,20 @@ spec:
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
+          env:
+            - name: JAVA_TOOL_OPTIONS
+              value: "-XX:InitialRAMPercentage=40 -XX:MaxRAMPercentage=65"
           envFrom:
             - configMapRef:
                 name: ozz-config
             - secretRef:
                 name: ozz-secret
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 512Mi
 ---
 apiVersion: v1
 kind: Service
@@ -159,11 +186,20 @@ spec:
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8082
+          env:
+            - name: JAVA_TOOL_OPTIONS
+              value: "-XX:InitialRAMPercentage=40 -XX:MaxRAMPercentage=65"
           envFrom:
             - configMapRef:
                 name: ozz-config
             - secretRef:
                 name: ozz-secret
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 512Mi
 ---
 apiVersion: v1
 kind: Service
@@ -197,11 +233,20 @@ spec:
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8081
+          env:
+            - name: JAVA_TOOL_OPTIONS
+              value: "-XX:InitialRAMPercentage=40 -XX:MaxRAMPercentage=65"
           envFrom:
             - configMapRef:
                 name: ozz-config
             - secretRef:
                 name: ozz-secret
+          resources:
+            requests:
+              cpu: 150m
+              memory: 384Mi
+            limits:
+              memory: 768Mi
 ---
 apiVersion: v1
 kind: Service
@@ -235,11 +280,20 @@ spec:
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8083
+          env:
+            - name: JAVA_TOOL_OPTIONS
+              value: "-XX:InitialRAMPercentage=40 -XX:MaxRAMPercentage=65"
           envFrom:
             - configMapRef:
                 name: ozz-config
             - secretRef:
                 name: ozz-secret
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 512Mi
 ---
 apiVersion: v1
 kind: Service
@@ -273,11 +327,20 @@ spec:
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8084
+          env:
+            - name: JAVA_TOOL_OPTIONS
+              value: "-XX:InitialRAMPercentage=40 -XX:MaxRAMPercentage=65"
           envFrom:
             - configMapRef:
                 name: ozz-config
             - secretRef:
                 name: ozz-secret
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 512Mi
 ---
 apiVersion: v1
 kind: Service
@@ -316,6 +379,12 @@ spec:
                 name: ozz-config
             - secretRef:
                 name: ozz-secret
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              memory: 384Mi
 ---
 apiVersion: v1
 kind: Service
@@ -349,11 +418,20 @@ spec:
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8000
+          env:
+            - name: JAVA_TOOL_OPTIONS
+              value: "-XX:InitialRAMPercentage=40 -XX:MaxRAMPercentage=65"
           envFrom:
             - configMapRef:
                 name: ozz-config
             - secretRef:
                 name: ozz-secret
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 512Mi
 ---
 apiVersion: v1
 kind: Service
@@ -392,3 +470,9 @@ spec:
                 name: ozz-config
             - secretRef:
                 name: ozz-secret
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              memory: 384Mi
