@@ -6,7 +6,8 @@ WORKDIR /app/frontend/ozz
 
 # 3. 패키지 파일 복사 및 의존성 설치
 COPY frontend/ozz/package.json frontend/ozz/package-lock.json ./
-COPY backend/ai/app/utils/sjw-project-demo-header-0.1.0.tgz /app/backend/ai/app/utils/sjw-project-demo-header-0.1.0.tgz
+RUN mkdir -p src/lib
+COPY frontend/ozz/src/lib/sjw-project-demo-header-0.1.2.tgz ./src/lib/sjw-project-demo-header-0.1.2.tgz
 RUN npm install
 
 # 4. 애플리케이션 소스 복사
