@@ -9,16 +9,14 @@ import lombok.*;
 @Getter
 @Builder(toBuilder = true)
 @Table(name = "favorite")
+@IdClass(FavoriteId.class)
 public class Favorite {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "favorite_id")
-    private Long id;
-
     @ManyToOne
-    @JoinColumn(name = "favorite_group_id")
+    @JoinColumn(name = "favorite_group_id", nullable = false)
     private FavoriteGroup favoriteGroup;
 
-    @Column
+    @Id
+    @Column(name = "coordinate_id")
     private Long coordinateId;
 }

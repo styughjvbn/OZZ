@@ -20,7 +20,7 @@ public class FavoriteGroup {
     @Column(name = "favorite_group_name")
     private String name;
 
-    @Column
+    @Column(name = "users_id")
     private Long userId;
 
     @OneToMany(mappedBy = "favoriteGroup")

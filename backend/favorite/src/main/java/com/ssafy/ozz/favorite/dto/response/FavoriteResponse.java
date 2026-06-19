@@ -11,7 +11,7 @@ public record FavoriteResponse(
 ) {
     public static FavoriteResponse of(Favorite favorite, CoordinateBasicResponse coordinate) {
         return FavoriteResponse.builder()
-                .favoriteId(favorite.getId())
+                .favoriteId(favorite.getCoordinateId())
                 .coordinate(coordinate)
                 .build();
     }
