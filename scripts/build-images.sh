@@ -18,7 +18,7 @@ docker build -t "ozz/board:${TAG}" ./board
 docker build -t "ozz/file-server:${TAG}" ./file-server
 docker build -t "ozz/ai:${TAG}" ./ai
 
-cd "${ROOT_DIR}/frontend"
-docker build -t "ozz/frontend:${TAG}" ./ozz
+cd "${ROOT_DIR}"
+docker build -f frontend/ozz/Dockerfile -t "ozz/frontend:${TAG}" .
 
 echo "Built OZZ images with tag ${TAG}"

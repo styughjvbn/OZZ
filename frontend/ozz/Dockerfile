@@ -2,14 +2,15 @@
 FROM node:20-alpine AS builder
 
 # 2. 작업 디렉터리 설정
-WORKDIR /app
+WORKDIR /app/frontend/ozz
 
 # 3. 패키지 파일 복사 및 의존성 설치
-COPY package.json package-lock.json ./
+COPY frontend/ozz/package.json frontend/ozz/package-lock.json ./
+COPY backend/ai/app/utils/sjw-project-demo-header-0.1.0.tgz /app/backend/ai/app/utils/sjw-project-demo-header-0.1.0.tgz
 RUN npm install
 
 # 4. 애플리케이션 소스 복사
-COPY . .
+COPY frontend/ozz ./
 
 # 5. Next.js 애플리케이션 빌드
 RUN npm run build
@@ -21,16 +22,14 @@ FROM node:20-alpine AS runner
 WORKDIR /app
 
 # 8. 빌드된 파일 복사
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/package.json ./package.json
-
-# 9. 환경 변수 설정 (필요 시)
-COPY .env /app/.env
+COPY --from=builder /app/frontend/ozz/.next ./.next
+COPY --from=builder /app/frontend/ozz/node_modules ./node_modules
+COPY --from=builder /app/frontend/ozz/public ./public
+COPY --from=builder /app/frontend/ozz/next.config.mjs ./next.config.mjs
+COPY --from=builder /app/frontend/ozz/package.json ./package.json
 
 # 10. 포트 노출
 EXPOSE 3000
 
 # 11. Next.js 애플리케이션 실행
-CMD npm start
+CMD ["npm", "start"]

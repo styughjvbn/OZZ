@@ -1,0 +1,8 @@
+.git
+**/node_modules
+**/.next
+**/build
+**/dist
+**/.gradle
+**/tsconfig.tsbuildinfo
+frontend/ozz/.env
