@@ -16,6 +16,8 @@ data:
   FRONT_HTTP_HOST: "http://ozz.local"
   FRONT_HTTPS_HOST: "https://ozz.local"
   FRONTEND_URL: "http://ozz.local"
+  API_GATEWAY_URL: "http://ozz-gateway:8000"
+  OZZ_AUTH_URL: "http://ozz-auth:8080"
   SPRING_PROFILES_ACTIVE: "dev"
   EUREKA_CLIENT_SERVICE_URL_DEFAULT_ZONE: "http://ozz-eureka:8761/eureka/"
   EUREKA_INSTANCE_PREFER_IP_ADDRESS: "true"
