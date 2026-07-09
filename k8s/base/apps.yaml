@@ -42,16 +42,16 @@ spec:
             - containerPort: 8761
           env:
             - name: JAVA_TOOL_OPTIONS
-              value: "-XX:InitialRAMPercentage=40 -XX:MaxRAMPercentage=65"
+              value: "-XX:InitialRAMPercentage=10 -XX:MaxRAMPercentage=45 -XX:MaxMetaspaceSize=128m"
           envFrom:
             - configMapRef:
                 name: ozz-config
           resources:
             requests:
-              cpu: 100m
-              memory: 256Mi
+              cpu: 50m
+              memory: 192Mi
             limits:
-              memory: 512Mi
+              memory: 384Mi
 ---
 apiVersion: v1
 kind: Service
@@ -87,7 +87,7 @@ spec:
             - containerPort: 9000
           env:
             - name: JAVA_TOOL_OPTIONS
-              value: "-XX:InitialRAMPercentage=40 -XX:MaxRAMPercentage=65"
+              value: "-XX:InitialRAMPercentage=10 -XX:MaxRAMPercentage=45 -XX:MaxMetaspaceSize=128m"
           envFrom:
             - configMapRef:
                 name: ozz-config
@@ -95,10 +95,10 @@ spec:
                 name: ozz-secret
           resources:
             requests:
-              cpu: 100m
-              memory: 256Mi
+              cpu: 50m
+              memory: 192Mi
             limits:
-              memory: 512Mi
+              memory: 384Mi
           volumeMounts:
             - name: file-data
               mountPath: /data/uploads
@@ -141,7 +141,7 @@ spec:
             - containerPort: 8080
           env:
             - name: JAVA_TOOL_OPTIONS
-              value: "-XX:InitialRAMPercentage=40 -XX:MaxRAMPercentage=65"
+              value: "-XX:InitialRAMPercentage=10 -XX:MaxRAMPercentage=45 -XX:MaxMetaspaceSize=128m"
           envFrom:
             - configMapRef:
                 name: ozz-config
@@ -149,10 +149,10 @@ spec:
                 name: ozz-secret
           resources:
             requests:
-              cpu: 100m
-              memory: 256Mi
+              cpu: 50m
+              memory: 192Mi
             limits:
-              memory: 512Mi
+              memory: 384Mi
 ---
 apiVersion: v1
 kind: Service
@@ -188,7 +188,7 @@ spec:
             - containerPort: 8082
           env:
             - name: JAVA_TOOL_OPTIONS
-              value: "-XX:InitialRAMPercentage=40 -XX:MaxRAMPercentage=65"
+              value: "-XX:InitialRAMPercentage=10 -XX:MaxRAMPercentage=45 -XX:MaxMetaspaceSize=128m"
           envFrom:
             - configMapRef:
                 name: ozz-config
@@ -196,10 +196,10 @@ spec:
                 name: ozz-secret
           resources:
             requests:
-              cpu: 100m
-              memory: 256Mi
+              cpu: 50m
+              memory: 192Mi
             limits:
-              memory: 512Mi
+              memory: 384Mi
 ---
 apiVersion: v1
 kind: Service
@@ -235,7 +235,7 @@ spec:
             - containerPort: 8081
           env:
             - name: JAVA_TOOL_OPTIONS
-              value: "-XX:InitialRAMPercentage=40 -XX:MaxRAMPercentage=65"
+              value: "-XX:InitialRAMPercentage=10 -XX:MaxRAMPercentage=45 -XX:MaxMetaspaceSize=128m"
           envFrom:
             - configMapRef:
                 name: ozz-config
@@ -243,10 +243,10 @@ spec:
                 name: ozz-secret
           resources:
             requests:
-              cpu: 150m
-              memory: 384Mi
+              cpu: 100m
+              memory: 256Mi
             limits:
-              memory: 768Mi
+              memory: 512Mi
 ---
 apiVersion: v1
 kind: Service
@@ -282,7 +282,7 @@ spec:
             - containerPort: 8083
           env:
             - name: JAVA_TOOL_OPTIONS
-              value: "-XX:InitialRAMPercentage=40 -XX:MaxRAMPercentage=65"
+              value: "-XX:InitialRAMPercentage=10 -XX:MaxRAMPercentage=45 -XX:MaxMetaspaceSize=128m"
           envFrom:
             - configMapRef:
                 name: ozz-config
@@ -290,10 +290,10 @@ spec:
                 name: ozz-secret
           resources:
             requests:
-              cpu: 100m
-              memory: 256Mi
+              cpu: 50m
+              memory: 192Mi
             limits:
-              memory: 512Mi
+              memory: 384Mi
 ---
 apiVersion: v1
 kind: Service
@@ -329,7 +329,7 @@ spec:
             - containerPort: 8084
           env:
             - name: JAVA_TOOL_OPTIONS
-              value: "-XX:InitialRAMPercentage=40 -XX:MaxRAMPercentage=65"
+              value: "-XX:InitialRAMPercentage=10 -XX:MaxRAMPercentage=45 -XX:MaxMetaspaceSize=128m"
           envFrom:
             - configMapRef:
                 name: ozz-config
@@ -337,10 +337,10 @@ spec:
                 name: ozz-secret
           resources:
             requests:
-              cpu: 100m
-              memory: 256Mi
+              cpu: 50m
+              memory: 192Mi
             limits:
-              memory: 512Mi
+              memory: 384Mi
 ---
 apiVersion: v1
 kind: Service
@@ -420,7 +420,7 @@ spec:
             - containerPort: 8000
           env:
             - name: JAVA_TOOL_OPTIONS
-              value: "-XX:InitialRAMPercentage=40 -XX:MaxRAMPercentage=65"
+              value: "-XX:InitialRAMPercentage=10 -XX:MaxRAMPercentage=45 -XX:MaxMetaspaceSize=128m"
           envFrom:
             - configMapRef:
                 name: ozz-config
@@ -428,10 +428,10 @@ spec:
                 name: ozz-secret
           resources:
             requests:
-              cpu: 100m
-              memory: 256Mi
+              cpu: 50m
+              memory: 192Mi
             limits:
-              memory: 512Mi
+              memory: 384Mi
 ---
 apiVersion: v1
 kind: Service

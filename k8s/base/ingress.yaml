@@ -12,6 +12,13 @@ spec:
     - host: ozz.sjw-project.site
       http:
         paths:
+          - path: /api/demo-guest-login
+            pathType: Prefix
+            backend:
+              service:
+                name: ozz-frontend
+                port:
+                  number: 3000
           - path: /apis
             pathType: Prefix
             backend:
