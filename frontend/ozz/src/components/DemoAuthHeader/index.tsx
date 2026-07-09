@@ -8,7 +8,7 @@ import {
   type DemoMe,
   type DemoProject,
 } from '@sjw-project/demo-header'
-import { useCallback, useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { removeTokens } from '@/services/authApi'
 
 const DEMO_AUTH_URL =
@@ -71,6 +71,8 @@ const requestOzzDemoLogin = async () => {
 }
 
 export default function DemoAuthHeader() {
+  const [projects, setProjects] = useState<DemoProject[]>([])
+
   const authClient = useMemo(() => {
     if (typeof window !== 'undefined' && isLocalhost()) {
       return createLocalMockAuthClient()
@@ -79,16 +81,26 @@ export default function DemoAuthHeader() {
     return createDemoAuthClient(DEMO_AUTH_URL)
   }, [])
 
-  const projects = useMemo<DemoProject[]>(() => {
-    const currentOrigin =
-      typeof window === 'undefined'
-        ? 'http://localhost:3000'
-        : window.location.origin
+  useEffect(() => {
+    let cancelled = false
+    const projectClient = createDemoAuthClient(DEMO_AUTH_URL)
 
-    return [
-      { name: 'Demo Home', url: DEMO_AUTH_URL },
-      { name: 'OZZ', url: currentOrigin },
-    ]
+    projectClient
+      .fetchProjects?.()
+      .then((nextProjects) => {
+        if (!cancelled) {
+          setProjects(nextProjects)
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setProjects([])
+        }
+      })
+
+    return () => {
+      cancelled = true
+    }
   }, [])
 
   const syncOzzAuth = useCallback(async (nextMe: DemoMe) => {

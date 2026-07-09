@@ -36,6 +36,10 @@ interface User {
   profileFileId?: number
 }
 
+const DEMO_ACCOUNT_EMAIL = 'demo@ozz.local'
+const DEMO_ACCOUNT_NICKNAME = 'ozz-demo'
+const DEMO_RESTRICTED_MESSAGE = '데모계정은 정보 수정이 제한됩니다.'
+
 function Field({ label, id, children }: FieldProps) {
   return (
     <div className="w-full text-sm font-medium">
@@ -56,9 +60,17 @@ function ProfileEdit() {
   const [toastMessage, setToastMessage] = useState<string | null>(null)
 
   const router = useRouter()
-  const showToast = (message: string) => {
+  const showToast = useCallback((message: string) => {
     setToastMessage(message)
-  }
+  }, [])
+
+  const isDemoAccount =
+    user?.email === DEMO_ACCOUNT_EMAIL ||
+    user?.nickname === DEMO_ACCOUNT_NICKNAME
+
+  const blockDemoAccountAction = useCallback(() => {
+    showToast(DEMO_RESTRICTED_MESSAGE)
+  }, [showToast])
 
   const getProfilePic = async (picId: number) => {
     try {
@@ -119,6 +131,11 @@ function ProfileEdit() {
   }
 
   const saveUserInfo = async () => {
+    if (isDemoAccount) {
+      blockDemoAccountAction()
+      return false
+    }
+
     try {
       // 닉네임이 변경되지 않은 경우 중복 확인을 건너뜀
       if (user?.nickname !== nickname) {
@@ -146,14 +163,29 @@ function ProfileEdit() {
   }
 
   const toggleProfileModal = useCallback(() => {
+    if (isDemoAccount) {
+      blockDemoAccountAction()
+      return
+    }
+
     setProfileModal((prev) => !prev)
-  }, [])
+  }, [blockDemoAccountAction, isDemoAccount])
 
   const toggleDeleteModal = useCallback(() => {
+    if (isDemoAccount) {
+      blockDemoAccountAction()
+      return
+    }
+
     setDeleteModal((prev) => !prev)
-  }, [])
+  }, [blockDemoAccountAction, isDemoAccount])
 
   const resetProfilePic = async () => {
+    if (isDemoAccount) {
+      blockDemoAccountAction()
+      return
+    }
+
     if (user?.profileFileId) {
       try {
         await deleteProfileImage()
@@ -172,7 +204,15 @@ function ProfileEdit() {
   const handleFileSelect = async (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
-    const file = event.target.files?.[0]
+    const fileInput = event.currentTarget
+
+    if (isDemoAccount) {
+      fileInput.value = ''
+      blockDemoAccountAction()
+      return
+    }
+
+    const file = fileInput.files?.[0]
     if (file) {
       try {
         await uploadProfileImage(file)
@@ -185,6 +225,11 @@ function ProfileEdit() {
   }
 
   const deleteAccount = () => {
+    if (isDemoAccount) {
+      blockDemoAccountAction()
+      return
+    }
+
     deleteUser()
     router.push('/')
   }

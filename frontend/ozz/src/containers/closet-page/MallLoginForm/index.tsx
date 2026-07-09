@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Loading from '@/app/closet/loading'
 import Image from 'next/image'
@@ -15,8 +15,9 @@ export function DemoImportForm({ mall }: { mall: string }) {
   const [isLoading, setIsLoading] = useState(false)
   const [isAlertOpen, setIsAlertOpen] = useState(false)
   const [alertMessage, setAlertMessage] = useState<string[]>([])
+  const [shouldStartAfterAlert, setShouldStartAfterAlert] = useState(false)
 
-  async function onSubmit() {
+  const startImport = useCallback(async () => {
     setIsLoading(true)
     const controller = new AbortController()
     const timeout = setTimeout(() => controller.abort(), IMPORT_TIMEOUT_MS)
@@ -48,7 +49,25 @@ export function DemoImportForm({ mall }: { mall: string }) {
       clearTimeout(timeout)
       setIsLoading(false)
     }
-  }
+  }, [mall, queryClient, router])
+
+  const onSubmit = useCallback(() => {
+    setAlertMessage([
+      'AI 서버 준비로 인해',
+      '등록에 약 1분 정도 소요될 수 있습니다.',
+    ])
+    setShouldStartAfterAlert(true)
+    setIsAlertOpen(true)
+  }, [])
+
+  const closeAlert = useCallback(() => {
+    setIsAlertOpen(false)
+
+    if (shouldStartAfterAlert) {
+      setShouldStartAfterAlert(false)
+      startImport()
+    }
+  }, [shouldStartAfterAlert, startImport])
 
   if (isLoading) {
     return <Loading />
@@ -69,10 +88,7 @@ export function DemoImportForm({ mall }: { mall: string }) {
       </button>
 
       {isAlertOpen && (
-        <AlertModal
-          onClose={() => setIsAlertOpen(false)}
-          messages={alertMessage}
-        />
+        <AlertModal onClose={closeAlert} messages={alertMessage} />
       )}
     </div>
   )
