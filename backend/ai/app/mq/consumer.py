@@ -41,6 +41,7 @@ def EAcallback(ch, method, properties, body):
         data,removed_data = client.get_result()
     except Exception as e:
         logging.error(traceback.format_exc())
+        return
 
     try:
         if len(removed_data) > 0:

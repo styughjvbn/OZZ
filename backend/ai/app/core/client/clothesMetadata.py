@@ -86,6 +86,12 @@ class ClothesMetadata:
         self.category_dict_data = None
         self.low_category_2_code_data = None
         self.attr_dict_data = None
+        self.refresh_categories()
+        self.refresh_attributes()
+
+    def refresh_categories(self):
+        self.category_dict_data = None
+        self.low_category_2_code_data = None
         response = requests.get(f"{os.getenv('CLOTHES_ENDPOINT')}/api/categories")
         if response.ok:
             self.categories = response.json()
@@ -94,6 +100,9 @@ class ClothesMetadata:
         else:
             logging.error(f"{response.request.url} 카테고리 불러오기 실패, {str(response.json())}")
             raise ConnectionError
+
+    def refresh_attributes(self):
+        self.attr_dict_data = None
         response = requests.get(f"{os.getenv('CLOTHES_ENDPOINT')}/api/clothes/properties/all")
         if response.ok:
             self.attributes = response.json()

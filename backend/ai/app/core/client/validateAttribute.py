@@ -196,6 +196,10 @@ Give me the response in JSON format {`parent category`:{`Incorrect value`:`Corre
         }]
 
     def validate_data(self, raw_GPTAttrResponse: GPTAttrResponse):
+        if raw_GPTAttrResponse.parentCategory not in self.clothes_metadata.category_dict():
+            logging.warning(f"카테고리 메타데이터 미스, 새로고침 시도: {raw_GPTAttrResponse.parentCategory}")
+            self.clothes_metadata.refresh_categories()
+
         if raw_GPTAttrResponse.parentCategory in self.clothes_metadata.category_dict():
             if raw_GPTAttrResponse.subCategory in self.clothes_metadata.low_category_2_code():
                 return True
@@ -344,6 +348,10 @@ Expect a response in the format {<integer ID>:<item information to be changed>},
         }]
 
     def validate_data(self, raw_GPTAttrResponse: GPTAttrResponse):
+        if raw_GPTAttrResponse.parentCategory not in self.clothes_metadata.category_dict():
+            logging.warning(f"카테고리 메타데이터 미스, 새로고침 시도: {raw_GPTAttrResponse.parentCategory}")
+            self.clothes_metadata.refresh_categories()
+
         if raw_GPTAttrResponse.parentCategory in self.clothes_metadata.category_dict():
             if raw_GPTAttrResponse.subCategory in self.clothes_metadata.low_category_2_code():
                 return True
