@@ -5,8 +5,6 @@ import com.ssafy.ozz.clothes.category.domain.CategoryLow;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
-import java.util.List;
-
 @Schema(description = "상위 카테고리 기본 정보 DTO")
 @Builder
 public record CategoryHighBasicResponse(

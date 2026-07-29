@@ -1,7 +1,6 @@
 package com.ssafy.ozz.clothes.coordinate.repository.elasticsearch;
 
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
-import co.elastic.clients.elasticsearch._types.query_dsl.FunctionBoostMode;
 import co.elastic.clients.json.JsonData;
 import com.ssafy.ozz.clothes.clothes.dto.request.VectorRequest;
 import com.ssafy.ozz.clothes.clothes.dto.response.VectorResponse;
@@ -102,46 +101,5 @@ public class CoordinateSearchQueryRepositoryImpl implements CoordinateSearchQuer
             );
         }
         return b;
-    }
-
-    private Query createSearchQuery(CoordinateSearchCondition condition, Pageable pageable) {
-        float[] vector = getVector(condition.keyword());
-
-        return NativeQuery.builder()
-                .withQuery(q->q
-                    .functionScore(f->f
-                        .query(qq->qq
-                            .bool(b->b
-                                .filter(ff->ff
-                                    .term(t->t
-                                        .field("status")
-                                        .value("published")
-                                    )
-                                )
-                                // 무신사 검은 셔츠 검색시 '무신사' '검은' '셔츠'가 들어있는 document는 점수를 높힘
-                                .should(bs->bs
-                                    .match(mm->mm
-                                        .field("name")
-                                        .query(condition.keyword())
-                                    )
-                                )
-                            )
-                        )
-                        .functions(ff->ff
-                            // 무신사 검은 셔츠 검색시 '무신사 검은 셔츠'와 비슷한 vector를 가진 document의 score를 증가
-                            .scriptScore(s -> s
-                                .script(ss->ss
-                                    .inline(si->si
-                                        .source("cosineSimilarity(params.vector, 'vector') + 1.0")
-                                        .params(Collections.singletonMap("vector", JsonData.of(vector)))
-                                    )
-                                )
-                            )
-                        )
-                        .boostMode(FunctionBoostMode.Multiply)
-                    )
-                )
-                .withPageable(pageable) // Pagination
-                .build();
     }
 }

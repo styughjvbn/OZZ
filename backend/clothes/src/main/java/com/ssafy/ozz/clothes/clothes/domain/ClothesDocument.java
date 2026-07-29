@@ -1,8 +1,6 @@
 package com.ssafy.ozz.clothes.clothes.domain;
 
 import com.ssafy.ozz.clothes.global.es.Indices;
-import com.ssafy.ozz.library.clothes.properties.Fit;
-import com.ssafy.ozz.library.clothes.properties.Size;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.*;

@@ -1,6 +1,5 @@
 package com.ssafy.ozz.gateway.util;
 
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -48,9 +47,5 @@ public class JWTUtil {
     // 토큰 만료 시간 추출
     public Date getExpirationDate(String token) {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration();
-    }
-    // 모두 추출
-    private Claims extractAllClaims(String token) {
-        return Jwts.parser().setSigningKey(secretKey).build().parseSignedClaims(token).getBody();
     }
 }
