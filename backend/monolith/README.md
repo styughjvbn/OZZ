@@ -25,7 +25,7 @@ docker compose up --build
 - Java domain-to-domain calls use `InternalModuleAdapters` and stay in-process.
 - Gateway JWT validation, user-header propagation, and CORS run in the monolith.
 - FastAPI remains an external process and is exposed through `/api/ai/**`.
-- MySQL, Redis, RabbitMQ, Elasticsearch, and file storage remain infrastructure
+- MySQL, Redis, RabbitMQ, and file storage remain infrastructure
   dependencies.
 
 Cross-module contracts are plain Java outbound ports under each module's

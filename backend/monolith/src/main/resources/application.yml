@@ -14,14 +14,6 @@ spring:
       ddl-auto: update
     show-sql: ${JPA_SHOW_SQL:true}
     database-platform: org.hibernate.dialect.MySQLDialect
-  elasticsearch:
-    uris: ${SPRING_ELASTICSEARCH_URLS:http://localhost:9200}
-    username: ${SPRING_ELASTICSEARCH_USERNAME:elastic}
-    password: ${SPRING_ELASTICSEARCH_PASSWORD:ssafy}
-  data:
-    elasticsearch:
-      repositories:
-        enabled: false
   servlet:
     multipart:
       enabled: true

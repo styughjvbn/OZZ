@@ -39,9 +39,6 @@ dependencies {
 	// Web Client
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
-	// Elastic Search
-	implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
-
 	// Swagger
 	compileOnly 'io.swagger.core.v3:swagger-annotations-jakarta:2.2.22'
 

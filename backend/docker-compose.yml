@@ -30,22 +30,6 @@ services:
       - spring-cloud-network
       - message-queue-network
 
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.14.3
-    container_name: elasticsearch
-    environment:
-      discovery.type: single-node
-      xpack.security.enabled: "false"
-      xpack.security.enrollment.enabled: "false"
-      ES_JAVA_OPTS: -Xms512m -Xmx512m
-    ports:
-      - "9200:9200"
-    volumes:
-      - es-data:/usr/share/elasticsearch/data
-      - ./es/elasticsearch/config/synonym/:/usr/share/elasticsearch/config/synonym/
-    networks:
-      - spring-cloud-network
-
   ozz-backend:
     container_name: ozz-backend
     build: ./monolith
@@ -60,7 +44,6 @@ services:
       INTERNAL_API_TOKEN: ${INTERNAL_API_TOKEN:-local-development-internal-token}
       REDIS_HOST: redis
       RABBITMQ_HOST: rabbitmq
-      SPRING_ELASTICSEARCH_URLS: http://elasticsearch:9200
       FASTAPI_URL: http://ozz-ai:5000
       FILE_UPLOAD_DIR: /data/uploads
     volumes:
@@ -69,7 +52,6 @@ services:
       - mysql-db
       - redis
       - rabbitmq
-      - elasticsearch
     networks:
       - spring-cloud-network
       - message-queue-network
@@ -98,7 +80,6 @@ services:
 
 volumes:
   mysql-data:
-  es-data:
   file-data:
 
 networks:

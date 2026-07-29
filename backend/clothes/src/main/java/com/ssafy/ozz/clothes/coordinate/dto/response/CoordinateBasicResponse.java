@@ -1,7 +1,6 @@
 package com.ssafy.ozz.clothes.coordinate.dto.response;
 
 import com.ssafy.ozz.clothes.coordinate.domain.Coordinate;
-import com.ssafy.ozz.clothes.coordinate.domain.CoordinateDocument;
 import com.ssafy.ozz.library.clothes.properties.Style;
 import com.ssafy.ozz.library.file.FileInfo;
 import lombok.Builder;
@@ -27,15 +26,5 @@ public record CoordinateBasicResponse(
                 .createdDate(coordinate.getCreatedDate())
                 .imageFile(file)
                 .build();
-    }
-
-    public CoordinateBasicResponse(CoordinateDocument coordinate, FileInfo file){
-        this(
-                coordinate.getCoordinateId(),
-                coordinate.getName(),
-                toEnums(Style.class, coordinate.getStyle()),
-                coordinate.getCreatedDate(),
-                file
-        );
     }
 }

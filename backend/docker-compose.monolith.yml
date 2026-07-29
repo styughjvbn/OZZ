@@ -19,7 +19,6 @@ services:
       FRONT_HTTPS_HOST: ${FRONT_HTTPS_HOST:-https://localhost:3000}
       REDIS_HOST: redis
       RABBITMQ_HOST: rabbitmq
-      SPRING_ELASTICSEARCH_URLS: http://elasticsearch:9200
       FASTAPI_URL: http://ozz-ai:5000
       FILE_UPLOAD_DIR: /data/uploads
     networks:

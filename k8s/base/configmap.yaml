@@ -13,7 +13,6 @@ data:
   API_GATEWAY_URL: "http://ozz-backend:8000"
   OZZ_AUTH_URL: "http://ozz-backend:8000"
   DB_URL: "jdbc:mysql://mysql-db:3306/ozz"
-  SPRING_DATA_ELASTICSEARCH_REPOSITORIES_ENABLED: "false"
   FASTAPI_URL: "http://ozz-ai:5000"
   RABBITMQ_HOST: "rabbitmq"
   RABBITMQ_PORT: "5672"

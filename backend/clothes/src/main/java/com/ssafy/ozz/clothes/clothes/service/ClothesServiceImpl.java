@@ -203,7 +203,6 @@ public class ClothesServiceImpl implements ClothesService {
         return sink.asFlux();
     }
 
-    /* Demo search: QueryDSL fallback instead of Elasticsearch */
     @Override
     @Transactional(readOnly = true)
     public Slice<ClothesBasicWithFileResponse> searchClothes(ClothesSearchCondition condition, Pageable pageable) {
