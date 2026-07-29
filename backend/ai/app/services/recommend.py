@@ -20,7 +20,13 @@ class RecommendService:
 
         logging.info(f"Try load {user_id}'s clothes")
 
-        response = requests.get(url, headers={"X-User-Id": user_id})
+        response = requests.get(
+            url,
+            headers={
+                "X-User-Id": str(user_id),
+                "X-Internal-Token": os.getenv("INTERNAL_API_TOKEN", "")
+            }
+        )
 
         logging.info(f"Loaded {user_id}'s clothes" + str(response.json()))
 

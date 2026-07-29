@@ -61,7 +61,7 @@ dependencies {
     //- micro service 간 통신 feign
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 
-    implementation 'com.ssafy.ozz:library:1.0.0'
+    implementation project(':library')
 }
 
 dependencyManagement {

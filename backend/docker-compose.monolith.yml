@@ -1,0 +1,59 @@
+services:
+  ozz-backend:
+    container_name: ozz-backend
+    build:
+      context: ./monolith
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    volumes:
+      - file-data:/data/uploads
+    environment:
+      BACKEND_PORT: 8000
+      DB_URL: jdbc:mysql://mysql-db:3306/ozz
+      DB_USER: ${DB_USER:-root}
+      DB_PW: ${DB_PW:-ssafy}
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
+      INTERNAL_API_TOKEN: ${INTERNAL_API_TOKEN:?INTERNAL_API_TOKEN is required}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
+      FRONT_HTTP_HOST: ${FRONT_HTTP_HOST:-http://localhost:3000}
+      FRONT_HTTPS_HOST: ${FRONT_HTTPS_HOST:-https://localhost:3000}
+      REDIS_HOST: redis
+      RABBITMQ_HOST: rabbitmq
+      SPRING_ELASTICSEARCH_URLS: http://elasticsearch:9200
+      FASTAPI_URL: http://ozz-ai:5000
+      FILE_UPLOAD_DIR: /data/uploads
+    networks:
+      - spring-cloud-network
+      - message-queue-network
+
+  ozz-ai:
+    container_name: ozz-ai
+    build: ./ai
+    ports:
+      - "${AI_PORT:-5000}:5000"
+    environment:
+      AI_PORT: 5000
+      RABBITMQ_HOST: rabbitmq
+      CLOTHES_ENDPOINT: http://ozz-backend:8000
+      FILE_HOST: http://ozz-backend:8000
+      INTERNAL_API_TOKEN: ${INTERNAL_API_TOKEN:?INTERNAL_API_TOKEN is required}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      IMAGE_PROCESS_MODE: ${IMAGE_PROCESS_MODE:-modal}
+      MODAL_IMAGE_PROCESS_APP: ${MODAL_IMAGE_PROCESS_APP:-ozz-image-process}
+      MODAL_IMAGE_PROCESS_FUNCTION: ${MODAL_IMAGE_PROCESS_FUNCTION:-process_image}
+    depends_on:
+      - ozz-backend
+    networks:
+      - spring-cloud-network
+      - message-queue-network
+
+volumes:
+  file-data:
+
+networks:
+  spring-cloud-network:
+    external: true
+    name: ${SPRING_NETWORK:-backend_spring-cloud-network}
+  message-queue-network:
+    external: true
+    name: ${MESSAGE_QUEUE_NETWORK:-backend_message-queue-network}

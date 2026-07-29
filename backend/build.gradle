@@ -27,3 +27,7 @@ task buildAll {
     dependsOn ':auth:bootJar', ':user:bootJar', ':file-server:bootJar', ':clothes:bootJar',
             ':eureka:bootJar', ':gateway:bootJar', ':favorite:bootJar', ':board:bootJar'
 }
+
+task buildMonolith {
+    dependsOn ':monolith:bootJar'
+}

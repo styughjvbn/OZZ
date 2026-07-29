@@ -30,21 +30,21 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: ozz-gateway
+                name: ozz-backend
                 port:
                   number: 8000
           - path: /login/guest
             pathType: Prefix
             backend:
               service:
-                name: ozz-gateway
+                name: ozz-backend
                 port:
                   number: 8000
           - path: /uploads
             pathType: Prefix
             backend:
               service:
-                name: ozz-gateway
+                name: ozz-backend
                 port:
                   number: 8000
           - path: /

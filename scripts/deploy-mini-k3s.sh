@@ -9,14 +9,7 @@ SECRET_FILE="${SECRET_FILE:-}"
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 REMOTE_DIR="/tmp/ozz-deploy-${TAG}"
 IMAGES=(
-  ozz/eureka
-  ozz/gateway
-  ozz/auth
-  ozz/user
-  ozz/clothes
-  ozz/favorite
-  ozz/board
-  ozz/file-server
+  ozz/backend
   ozz/ai
   ozz/frontend
 )
@@ -85,7 +78,7 @@ if [[ -f '${REMOTE_DIR}/ozz-secret.yaml' ]]; then
   kubectl apply -f '${REMOTE_DIR}/ozz-secret.yaml'
 fi
 kubectl apply -k '${REMOTE_DIR}/k8s/k8s/base'
-kubectl -n ozz rollout status deploy/ozz-gateway --timeout=240s
+kubectl -n ozz rollout status deploy/ozz-backend --timeout=240s
 kubectl -n ozz rollout status deploy/ozz-frontend --timeout=240s
 kubectl -n ozz get pods,svc,ingress"
 

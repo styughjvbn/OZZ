@@ -92,7 +92,10 @@ class ClothesMetadata:
     def refresh_categories(self):
         self.category_dict_data = None
         self.low_category_2_code_data = None
-        response = requests.get(f"{os.getenv('CLOTHES_ENDPOINT')}/api/categories")
+        response = requests.get(
+            f"{os.getenv('CLOTHES_ENDPOINT')}/api/categories",
+            headers={"X-Internal-Token": os.getenv("INTERNAL_API_TOKEN", "")}
+        )
         if response.ok:
             self.categories = response.json()
             self.category_dict_data = self.category_dict()
@@ -103,7 +106,10 @@ class ClothesMetadata:
 
     def refresh_attributes(self):
         self.attr_dict_data = None
-        response = requests.get(f"{os.getenv('CLOTHES_ENDPOINT')}/api/clothes/properties/all")
+        response = requests.get(
+            f"{os.getenv('CLOTHES_ENDPOINT')}/api/clothes/properties/all",
+            headers={"X-Internal-Token": os.getenv("INTERNAL_API_TOKEN", "")}
+        )
         if response.ok:
             self.attributes = response.json()
             self.attr_dict_data = self.attr_dict()

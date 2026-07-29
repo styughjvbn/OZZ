@@ -25,21 +25,7 @@ patches:
         value: false
 
 images:
-  - name: ozz/eureka
-    newTag: dev
-  - name: ozz/gateway
-    newTag: dev
-  - name: ozz/auth
-    newTag: dev
-  - name: ozz/user
-    newTag: dev
-  - name: ozz/clothes
-    newTag: dev
-  - name: ozz/favorite
-    newTag: dev
-  - name: ozz/board
-    newTag: dev
-  - name: ozz/file-server
+  - name: ozz/backend
     newTag: dev
   - name: ozz/ai
     newTag: dev

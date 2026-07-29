@@ -11,94 +11,61 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: ozz-eureka
+  name: ozz-backend
 spec:
   ports:
     - name: http
-      port: 8761
-      targetPort: 8761
+      port: 8000
+      targetPort: 8000
   selector:
-    app: ozz-eureka
+    app: ozz-backend
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ozz-eureka
+  name: ozz-backend
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: ozz-eureka
+      app: ozz-backend
   template:
     metadata:
       labels:
-        app: ozz-eureka
+        app: ozz-backend
     spec:
       containers:
-        - name: ozz-eureka
-          image: ozz/eureka:dev
+        - name: ozz-backend
+          image: ozz/backend:dev
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 8761
+            - containerPort: 8000
           env:
             - name: JAVA_TOOL_OPTIONS
-              value: "-XX:InitialRAMPercentage=10 -XX:MaxRAMPercentage=45 -XX:MaxMetaspaceSize=128m"
-          envFrom:
-            - configMapRef:
-                name: ozz-config
-          resources:
-            requests:
-              cpu: 50m
-              memory: 192Mi
-            limits:
-              memory: 384Mi
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: ozz-file
-spec:
-  ports:
-    - name: http
-      port: 9000
-      targetPort: 9000
-  selector:
-    app: ozz-file
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: ozz-file
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: ozz-file
-  template:
-    metadata:
-      labels:
-        app: ozz-file
-    spec:
-      containers:
-        - name: ozz-file
-          image: ozz/file-server:dev
-          imagePullPolicy: IfNotPresent
-          ports:
-            - containerPort: 9000
-          env:
-            - name: JAVA_TOOL_OPTIONS
-              value: "-XX:InitialRAMPercentage=10 -XX:MaxRAMPercentage=45 -XX:MaxMetaspaceSize=128m"
+              value: "-XX:InitialRAMPercentage=20 -XX:MaxRAMPercentage=65 -XX:MaxMetaspaceSize=256m"
           envFrom:
             - configMapRef:
                 name: ozz-config
             - secretRef:
                 name: ozz-secret
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8000
+            initialDelaySeconds: 45
+            periodSeconds: 15
           resources:
             requests:
-              cpu: 50m
-              memory: 192Mi
+              cpu: 250m
+              memory: 768Mi
             limits:
-              memory: 384Mi
+              memory: 1536Mi
           volumeMounts:
             - name: file-data
               mountPath: /data/uploads
@@ -106,245 +73,6 @@ spec:
         - name: file-data
           persistentVolumeClaim:
             claimName: file-data
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: ozz-auth
-spec:
-  ports:
-    - name: http
-      port: 8080
-      targetPort: 8080
-  selector:
-    app: ozz-auth
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: ozz-auth
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: ozz-auth
-  template:
-    metadata:
-      labels:
-        app: ozz-auth
-    spec:
-      containers:
-        - name: ozz-auth
-          image: ozz/auth:dev
-          imagePullPolicy: IfNotPresent
-          ports:
-            - containerPort: 8080
-          env:
-            - name: JAVA_TOOL_OPTIONS
-              value: "-XX:InitialRAMPercentage=10 -XX:MaxRAMPercentage=45 -XX:MaxMetaspaceSize=128m"
-            - name: REDIS_HOST
-              value: "redis"
-            - name: REDIS_PORT
-              value: "6379"
-          envFrom:
-            - configMapRef:
-                name: ozz-config
-            - secretRef:
-                name: ozz-secret
-          resources:
-            requests:
-              cpu: 50m
-              memory: 192Mi
-            limits:
-              memory: 384Mi
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: ozz-user
-spec:
-  ports:
-    - name: http
-      port: 8082
-      targetPort: 8082
-  selector:
-    app: ozz-user
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: ozz-user
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: ozz-user
-  template:
-    metadata:
-      labels:
-        app: ozz-user
-    spec:
-      containers:
-        - name: ozz-user
-          image: ozz/user:dev
-          imagePullPolicy: IfNotPresent
-          ports:
-            - containerPort: 8082
-          env:
-            - name: JAVA_TOOL_OPTIONS
-              value: "-XX:InitialRAMPercentage=10 -XX:MaxRAMPercentage=45 -XX:MaxMetaspaceSize=128m"
-          envFrom:
-            - configMapRef:
-                name: ozz-config
-            - secretRef:
-                name: ozz-secret
-          resources:
-            requests:
-              cpu: 50m
-              memory: 192Mi
-            limits:
-              memory: 384Mi
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: ozz-clothes
-spec:
-  ports:
-    - name: http
-      port: 8081
-      targetPort: 8081
-  selector:
-    app: ozz-clothes
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: ozz-clothes
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: ozz-clothes
-  template:
-    metadata:
-      labels:
-        app: ozz-clothes
-    spec:
-      containers:
-        - name: ozz-clothes
-          image: ozz/clothes:dev
-          imagePullPolicy: IfNotPresent
-          ports:
-            - containerPort: 8081
-          env:
-            - name: JAVA_TOOL_OPTIONS
-              value: "-XX:InitialRAMPercentage=10 -XX:MaxRAMPercentage=45 -XX:MaxMetaspaceSize=128m"
-          envFrom:
-            - configMapRef:
-                name: ozz-config
-            - secretRef:
-                name: ozz-secret
-          resources:
-            requests:
-              cpu: 100m
-              memory: 256Mi
-            limits:
-              memory: 512Mi
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: ozz-favorite
-spec:
-  ports:
-    - name: http
-      port: 8083
-      targetPort: 8083
-  selector:
-    app: ozz-favorite
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: ozz-favorite
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: ozz-favorite
-  template:
-    metadata:
-      labels:
-        app: ozz-favorite
-    spec:
-      containers:
-        - name: ozz-favorite
-          image: ozz/favorite:dev
-          imagePullPolicy: IfNotPresent
-          ports:
-            - containerPort: 8083
-          env:
-            - name: JAVA_TOOL_OPTIONS
-              value: "-XX:InitialRAMPercentage=10 -XX:MaxRAMPercentage=45 -XX:MaxMetaspaceSize=128m"
-          envFrom:
-            - configMapRef:
-                name: ozz-config
-            - secretRef:
-                name: ozz-secret
-          resources:
-            requests:
-              cpu: 50m
-              memory: 192Mi
-            limits:
-              memory: 384Mi
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: ozz-board
-spec:
-  ports:
-    - name: http
-      port: 8084
-      targetPort: 8084
-  selector:
-    app: ozz-board
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: ozz-board
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: ozz-board
-  template:
-    metadata:
-      labels:
-        app: ozz-board
-    spec:
-      containers:
-        - name: ozz-board
-          image: ozz/board:dev
-          imagePullPolicy: IfNotPresent
-          ports:
-            - containerPort: 8084
-          env:
-            - name: JAVA_TOOL_OPTIONS
-              value: "-XX:InitialRAMPercentage=10 -XX:MaxRAMPercentage=45 -XX:MaxMetaspaceSize=128m"
-          envFrom:
-            - configMapRef:
-                name: ozz-config
-            - secretRef:
-                name: ozz-secret
-          resources:
-            requests:
-              cpu: 50m
-              memory: 192Mi
-            limits:
-              memory: 384Mi
 ---
 apiVersion: v1
 kind: Service
@@ -387,53 +115,6 @@ spec:
             requests:
               cpu: 100m
               memory: 128Mi
-            limits:
-              memory: 384Mi
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: ozz-gateway
-spec:
-  ports:
-    - name: http
-      port: 8000
-      targetPort: 8000
-  selector:
-    app: ozz-gateway
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: ozz-gateway
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: ozz-gateway
-  template:
-    metadata:
-      labels:
-        app: ozz-gateway
-    spec:
-      containers:
-        - name: ozz-gateway
-          image: ozz/gateway:dev
-          imagePullPolicy: IfNotPresent
-          ports:
-            - containerPort: 8000
-          env:
-            - name: JAVA_TOOL_OPTIONS
-              value: "-XX:InitialRAMPercentage=10 -XX:MaxRAMPercentage=45 -XX:MaxMetaspaceSize=128m"
-          envFrom:
-            - configMapRef:
-                name: ozz-config
-            - secretRef:
-                name: ozz-secret
-          resources:
-            requests:
-              cpu: 50m
-              memory: 192Mi
             limits:
               memory: 384Mi
 ---

@@ -16,6 +16,10 @@ from app.utils.image_process import process_url
 from app.utils.image_utils import resize_and_convert_to_png
 
 
+def internal_headers():
+    return {"X-Internal-Token": os.getenv("INTERNAL_API_TOKEN", "")}
+
+
 def parseToBaseModel(body) -> list[NormalizedClothes] | None:
     try:
         data: list[dict] = json.loads(body)
@@ -49,7 +53,7 @@ def EAcallback(ch, method, properties, body):
                 logging.info(f"속성 추출 실패한 옷 삭제 : {str(removed_data)}")
                 removed_data=list(map(int,removed_data))
                 url = f"{os.getenv('CLOTHES_ENDPOINT')}/api/clothes"
-                requests.delete(url, json=removed_data)
+                requests.delete(url, json=removed_data, headers=internal_headers())
             except Exception as e:
                 logging.error(f"속성 추출 실패한 옷 삭제에러: {str(removed_data)}")
         
@@ -71,7 +75,11 @@ def EAcallback(ch, method, properties, body):
                 }
             )
             # PUT 요청 보내기
-            response = requests.put(url, data=mp_encoder, headers={"Content-Type": mp_encoder.content_type})
+            response = requests.put(
+                url,
+                data=mp_encoder,
+                headers={**internal_headers(), "Content-Type": mp_encoder.content_type}
+            )
             if not response.ok:
                 logging.error(f"속성 등록 실패 status={response.status_code}, body={response.text}")
 
@@ -121,7 +129,11 @@ def IPcallback(ch, method, properties, body):
         logging.info(f"이미지 등록 :  {url}")
 
         # patch 요청 보내기
-        response = requests.patch(url, data=mp_encoder, headers={"Content-Type": mp_encoder.content_type})
+        response = requests.patch(
+            url,
+            data=mp_encoder,
+            headers={**internal_headers(), "Content-Type": mp_encoder.content_type}
+        )
 
         # 응답 출력
         logging.info(response)
