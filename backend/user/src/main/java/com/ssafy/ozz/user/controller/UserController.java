@@ -3,9 +3,9 @@ package com.ssafy.ozz.user.controller;
 import com.ssafy.ozz.user.domain.User;
 import com.ssafy.ozz.user.dto.UserUpdateRequest;
 import com.ssafy.ozz.user.dto.UserUpdateResponse;
-import com.ssafy.ozz.user.global.auth.AuthClient;
-import com.ssafy.ozz.user.global.file.FileClient;
-import com.ssafy.ozz.user.global.file.dto.FeignFileInfo;
+import com.ssafy.ozz.user.application.port.out.AuthTokenPort;
+import com.ssafy.ozz.user.application.port.out.FilePort;
+import com.ssafy.ozz.user.application.port.out.dto.UserFileInfo;
 import com.ssafy.ozz.user.global.file.exception.FileUploadException;
 import com.ssafy.ozz.user.service.GuestService;
 import com.ssafy.ozz.user.service.UserService;
@@ -30,8 +30,8 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 @RequestMapping("/api/users")
 public class UserController {
 
-    private final FileClient fileClient;
-    private final AuthClient authClient;
+    private final FilePort filePort;
+    private final AuthTokenPort authTokenPort;
     private final UserService userService;
     private final GuestService guestService;
 
@@ -101,7 +101,7 @@ public class UserController {
         Optional<User> userOptional = userService.getUserById(userId);
         if (userOptional.isPresent()) {
             try {
-                FeignFileInfo fileInfo = fileClient.uploadFile(file).orElseThrow(FileUploadException::new);
+                UserFileInfo fileInfo = filePort.uploadFile(file).orElseThrow(FileUploadException::new);
                 User user = userOptional.get();
                 User updatedUser = user.toBuilder()
                         .profileFileId(fileInfo.fileId())
@@ -147,7 +147,7 @@ public class UserController {
         if (userOptional.isPresent()) {
             userService.deleteUser(userId);
             // 토큰도 삭제
-            authClient.deleteRefreshTokenOfUser(userId);
+            authTokenPort.deleteRefreshTokenOfUser(userId);
             return ResponseEntity.status(204).body("no content");
         } else {
             return ResponseEntity.status(404).body("User not found");

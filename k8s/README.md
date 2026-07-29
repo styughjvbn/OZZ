@@ -34,7 +34,7 @@ MINI_PC=sjw@192.168.0.16 MINI_PC_PORT=28282 SECRET_FILE=/tmp/ozz-secret.yaml TAG
 
 ```bash
 kubectl -n ozz get pods,svc,ingress
-kubectl -n ozz logs deploy/ozz-gateway
+kubectl -n ozz logs deploy/ozz-backend
 ```
 
 `kubectl`을 mini-pc 일반 계정에서 사용할 수 있다면 dev-pc에 `kubectl`을 설치하지 않아도 됩니다. 배포 스크립트는 원격 `kubectl`과 임시 image import Job을 사용합니다.

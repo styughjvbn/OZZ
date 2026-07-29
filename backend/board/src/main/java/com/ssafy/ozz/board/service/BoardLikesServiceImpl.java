@@ -3,7 +3,7 @@ package com.ssafy.ozz.board.service;
 import com.ssafy.ozz.board.domain.Board;
 import com.ssafy.ozz.board.domain.BoardLikes;
 import com.ssafy.ozz.board.domain.Notification;
-import com.ssafy.ozz.board.global.feign.user.UserClient;
+import com.ssafy.ozz.board.application.port.out.UserPort;
 import com.ssafy.ozz.board.repository.BoardLikesRepository;
 import com.ssafy.ozz.board.repository.BoardRepository;
 import com.ssafy.ozz.board.repository.NotificationRepository;
@@ -24,7 +24,7 @@ public class BoardLikesServiceImpl implements BoardLikesService {
     private final BoardLikesRepository boardLikesRepository;
     private final NotificationService notificationService;
     private final NotificationRepository notificationRepository;
-    private final UserClient userClient;
+    private final UserPort userPort;
 
     @Override
     @Transactional
@@ -55,7 +55,7 @@ public class BoardLikesServiceImpl implements BoardLikesService {
         boardLikesRepository.save(newBoardLike);
 
         // 알림 생성
-        UserInfo userInfo = userClient.getUserInfo(userId).orElseThrow(UserNotFoundException::new);
+        UserInfo userInfo = userPort.getUserInfo(userId).orElseThrow(UserNotFoundException::new);
         Notification notification = Notification.builder()
                 .board(board)
                 .userId(board.getUserId())

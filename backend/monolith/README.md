@@ -13,6 +13,13 @@ are not runtime dependencies.
 
 The executable jar is created under `monolith/build/libs`.
 
+For a local full stack, build the jar first and then run:
+
+```shell
+./gradlew buildMonolith
+docker compose up --build
+```
+
 ## Runtime boundaries
 
 - Java domain-to-domain calls use `InternalModuleAdapters` and stay in-process.
@@ -21,10 +28,11 @@ The executable jar is created under `monolith/build/libs`.
 - MySQL, Redis, RabbitMQ, Elasticsearch, and file storage remain infrastructure
   dependencies.
 
-The original Feign interfaces are temporarily retained as migration contracts.
-They are not discovered as Feign clients in the monolith. A later step should
-move these contracts to explicit module application APIs and remove OpenFeign
-from each domain module.
+Cross-module contracts are plain Java outbound ports under each module's
+`application.port.out` package. The composition root implements those ports in
+`InternalModuleAdapters`; domain modules do not depend on Eureka or OpenFeign.
+Every domain project is a `java-library` and only `monolith` creates a bootable
+jar.
 
 ## Kubernetes
 

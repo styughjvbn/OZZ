@@ -21,30 +21,12 @@ configurations {
 }
 
 dependencies {
-    implementation(project(':auth')) {
-        exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-netflix-eureka-client'
-        exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-openfeign'
-    }
-    implementation(project(':user')) {
-        exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-netflix-eureka-client'
-        exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-openfeign'
-    }
-    implementation(project(':file-server')) {
-        exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-netflix-eureka-client'
-        exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-openfeign'
-    }
-    implementation(project(':clothes')) {
-        exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-netflix-eureka-client'
-        exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-openfeign'
-    }
-    implementation(project(':favorite')) {
-        exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-netflix-eureka-client'
-        exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-openfeign'
-    }
-    implementation(project(':board')) {
-        exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-netflix-eureka-client'
-        exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-openfeign'
-    }
+    implementation project(':auth')
+    implementation project(':user')
+    implementation project(':file-server')
+    implementation project(':clothes')
+    implementation project(':favorite')
+    implementation project(':board')
     implementation project(':library')
 
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
@@ -53,6 +35,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
     implementation 'io.micrometer:micrometer-registry-prometheus'
+    runtimeOnly 'com.mysql:mysql-connector-j'
 
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
@@ -60,6 +43,8 @@ dependencies {
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'com.tngtech.archunit:archunit-junit5:1.3.0'
+    testRuntimeOnly 'com.h2database:h2'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 

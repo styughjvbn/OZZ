@@ -5,7 +5,7 @@ import com.ssafy.ozz.board.dto.request.BoardCreateRequest;
 import com.ssafy.ozz.board.dto.request.BoardUpdateRequest;
 import com.ssafy.ozz.board.dto.response.BoardBasicResponse;
 import com.ssafy.ozz.board.dto.response.BoardResponse;
-import com.ssafy.ozz.board.global.feign.file.FileClient;
+import com.ssafy.ozz.board.application.port.out.FilePort;
 import com.ssafy.ozz.board.service.BoardService;
 import com.ssafy.ozz.library.error.exception.BoardNotFoundException;
 import com.ssafy.ozz.library.file.FileInfo;
@@ -28,7 +28,7 @@ import static com.ssafy.ozz.library.config.HeaderConfig.X_USER_ID;
 public class BoardController {
 
     private final BoardService boardService;
-    private final FileClient fileClient;
+    private final FilePort filePort;
 
     // O
     @PostMapping("/")
@@ -49,7 +49,7 @@ public class BoardController {
             @Parameter(hidden = true) @RequestHeader(X_USER_ID) Long userId, Pageable pageable) {
         Page<Board> boards = boardService.getBoardsByUserId(userId, pageable);
         Page<BoardBasicResponse> boardBasicResponses = boards.map(board -> {
-            FileInfo boardImg = fileClient.getFile(board.getImgFileId()).orElseThrow(BoardNotFoundException::new);
+            FileInfo boardImg = filePort.getFile(board.getImgFileId()).orElseThrow(BoardNotFoundException::new);
             return new BoardBasicResponse(board, boardImg);
         });
         return ResponseEntity.ok(boardBasicResponses);
@@ -62,7 +62,7 @@ public class BoardController {
         Page<Board> boards = boardService.getBoards(pageable);
 
         Page<BoardBasicResponse> boardBasicResponses = boards.map(board -> {
-            FileInfo boardImg = fileClient.getFile(board.getImgFileId()).orElseThrow(BoardNotFoundException::new);
+            FileInfo boardImg = filePort.getFile(board.getImgFileId()).orElseThrow(BoardNotFoundException::new);
             return new BoardBasicResponse(board, boardImg);
         });
 
@@ -86,7 +86,7 @@ public class BoardController {
 
         Page<Board> boards = boardService.getBoardsByAgeRange(pageable, startAge, endAge);
         Page<BoardBasicResponse> boardBasicResponses = boards.map(board -> {
-            FileInfo boardImg = fileClient.getFile(board.getImgFileId()).orElseThrow(BoardNotFoundException::new);
+            FileInfo boardImg = filePort.getFile(board.getImgFileId()).orElseThrow(BoardNotFoundException::new);
             return new BoardBasicResponse(board, boardImg);
         });
 
@@ -100,7 +100,7 @@ public class BoardController {
 
         Page<Board> boards = boardService.getBoardsByStyle(pageable, style);
         Page<BoardBasicResponse> boardBasicResponses = boards.map(board -> {
-            FileInfo boardImg = fileClient.getFile(board.getImgFileId()).orElseThrow(BoardNotFoundException::new);
+            FileInfo boardImg = filePort.getFile(board.getImgFileId()).orElseThrow(BoardNotFoundException::new);
             return new BoardBasicResponse(board, boardImg);
         });
 
@@ -112,7 +112,7 @@ public class BoardController {
     public ResponseEntity<Page<BoardBasicResponse>> getBoardsSortedByLikesInLastDay(Pageable pageable) {
         Page<Board> boards = boardService.getBoardsSortedByLikesInOneDay(pageable);
         Page<BoardBasicResponse> boardBasicResponses = boards.map(board -> {
-            FileInfo boardImg = fileClient.getFile(board.getImgFileId()).orElseThrow(BoardNotFoundException::new);
+            FileInfo boardImg = filePort.getFile(board.getImgFileId()).orElseThrow(BoardNotFoundException::new);
             return new BoardBasicResponse(board, boardImg);
         });
 
@@ -150,4 +150,3 @@ public class BoardController {
 //    }
 
 }
-

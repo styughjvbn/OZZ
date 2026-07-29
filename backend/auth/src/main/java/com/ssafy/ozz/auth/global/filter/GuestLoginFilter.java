@@ -1,6 +1,6 @@
 package com.ssafy.ozz.auth.global.filter;
 
-import com.ssafy.ozz.auth.global.util.UserClient;
+import com.ssafy.ozz.auth.application.port.out.UserAccountPort;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,11 +14,11 @@ import java.io.IOException;
 
 public class GuestLoginFilter extends OncePerRequestFilter {
 
-    private final UserClient userClient;
+    private final UserAccountPort userAccountPort;
     private final AuthenticationSuccessHandler successHandler;
 
-    public GuestLoginFilter(UserClient userClient, AuthenticationSuccessHandler successHandler) {
-        this.userClient = userClient;
+    public GuestLoginFilter(UserAccountPort userAccountPort, AuthenticationSuccessHandler successHandler) {
+        this.userAccountPort = userAccountPort;
         this.successHandler = successHandler;
     }
 
@@ -27,11 +27,7 @@ public class GuestLoginFilter extends OncePerRequestFilter {
             throws IOException, ServletException {
         // 게스트 로그인 요청 처리
         if ("/login/guest".equals(request.getRequestURI())) {
-            Long guestUserId = userClient.createGuest().getBody();
-            if (guestUserId == null) {
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                return;
-            }
+            Long guestUserId = userAccountPort.createGuest();
 
             UsernamePasswordAuthenticationToken guestAuth = new UsernamePasswordAuthenticationToken(
                     guestUserId,

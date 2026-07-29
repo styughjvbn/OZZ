@@ -3,8 +3,8 @@ package com.ssafy.ozz.board.controller;
 import com.ssafy.ozz.board.domain.Notification;
 import com.ssafy.ozz.board.dto.response.NotificationResponse;
 import com.ssafy.ozz.board.dto.response.UserResponse;
-import com.ssafy.ozz.board.global.feign.file.FileClient;
-import com.ssafy.ozz.board.global.feign.user.UserClient;
+import com.ssafy.ozz.board.application.port.out.FilePort;
+import com.ssafy.ozz.board.application.port.out.UserPort;
 import com.ssafy.ozz.board.service.NotificationService;
 import com.ssafy.ozz.library.error.exception.FileNotFoundException;
 import com.ssafy.ozz.library.error.exception.UserNotFoundException;
@@ -29,8 +29,8 @@ import static com.ssafy.ozz.library.config.HeaderConfig.X_USER_ID;
 public class NotificationController {
 
     private final NotificationService notificationService;
-    private final FileClient fileClient;
-    private final UserClient userClient;
+    private final FilePort filePort;
+    private final UserPort userPort;
 
     @DeleteMapping("/{notificationId}")
     @Operation(summary = "알림 삭제", description = "알림을 삭제합니다.")
@@ -60,9 +60,9 @@ public class NotificationController {
         List<NotificationResponse> responseList = new ArrayList<>();
 
         for (Notification notification : notificationList) {
-            UserInfo userInfo = userClient.getUserInfo(notification.getUserId()).orElseThrow(UserNotFoundException::new);
-            FileInfo profileImg = fileClient.getFile(userInfo.profileFileId()).orElseThrow(FileNotFoundException::new);
-            FileInfo boardImg = fileClient.getFile(notification.getBoard().getImgFileId()).orElseThrow(FileNotFoundException::new);
+            UserInfo userInfo = userPort.getUserInfo(notification.getUserId()).orElseThrow(UserNotFoundException::new);
+            FileInfo profileImg = filePort.getFile(userInfo.profileFileId()).orElseThrow(FileNotFoundException::new);
+            FileInfo boardImg = filePort.getFile(notification.getBoard().getImgFileId()).orElseThrow(FileNotFoundException::new);
 
             UserResponse userResponse = new UserResponse(
                     userInfo.userId(),

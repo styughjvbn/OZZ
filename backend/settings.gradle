@@ -1,1 +1,1 @@
-include 'auth', 'user', 'file-server', 'clothes', 'eureka', 'gateway', 'library', 'favorite', 'board', 'monolith'
+include 'auth', 'user', 'file-server', 'clothes', 'library', 'favorite', 'board', 'monolith'

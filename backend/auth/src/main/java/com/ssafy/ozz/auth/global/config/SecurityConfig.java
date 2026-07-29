@@ -2,7 +2,7 @@ package com.ssafy.ozz.auth.global.config;
 
 import com.ssafy.ozz.auth.global.filter.GuestLoginFilter;
 import com.ssafy.ozz.auth.global.handler.CustomSuccessHandler;
-import com.ssafy.ozz.auth.global.util.UserClient;
+import com.ssafy.ozz.auth.application.port.out.UserAccountPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,7 +22,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 public class SecurityConfig {
 
     private final CustomSuccessHandler customSuccessHandler;
-    private final UserClient userClient;
+    private final UserAccountPort userAccountPort;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -76,7 +76,7 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         // 게스트 로그인 필터 추가
-        http.addFilterBefore(new GuestLoginFilter(userClient, customSuccessHandler), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new GuestLoginFilter(userAccountPort, customSuccessHandler), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

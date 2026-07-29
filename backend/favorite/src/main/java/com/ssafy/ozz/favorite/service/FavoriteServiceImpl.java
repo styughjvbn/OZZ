@@ -7,7 +7,7 @@ import com.ssafy.ozz.favorite.dto.request.FavoriteListDeleteRequest;
 import com.ssafy.ozz.favorite.dto.response.FavoriteGroupBasicResponse;
 import com.ssafy.ozz.favorite.dto.response.FavoriteGroupImageResponse;
 import com.ssafy.ozz.favorite.dto.response.FavoriteResponse;
-import com.ssafy.ozz.favorite.global.feign.coordinate.CoordinateClient;
+import com.ssafy.ozz.favorite.application.port.out.CoordinatePort;
 import com.ssafy.ozz.favorite.repository.FavoriteGroupRepository;
 import com.ssafy.ozz.favorite.repository.FavoriteRepository;
 import com.ssafy.ozz.library.error.exception.CoordinateNotFoundException;
@@ -28,7 +28,7 @@ public class FavoriteServiceImpl implements FavoriteService {
 
     private final FavoriteRepository favoriteRepository;
     private final FavoriteGroupRepository favoriteGroupRepository;
-    private final CoordinateClient coordinateClient;
+    private final CoordinatePort coordinatePort;
 
     @Override
     public FavoriteResponse addFavorite(Long favoriteGroupId, Long coordinateId) {
@@ -44,7 +44,7 @@ public class FavoriteServiceImpl implements FavoriteService {
                 .coordinateId(coordinateId)
                 .build();
 
-        return FavoriteResponse.of(favoriteRepository.save(favorite),coordinateClient.getCoordinate(coordinateId).orElseThrow(CoordinateNotFoundException::new));
+        return FavoriteResponse.of(favoriteRepository.save(favorite),coordinatePort.getCoordinate(coordinateId).orElseThrow(CoordinateNotFoundException::new));
     }
 
     @Override
@@ -86,7 +86,7 @@ public class FavoriteServiceImpl implements FavoriteService {
         FavoriteGroup favoriteGroup = favoriteGroupRepository.findById(favoriteGroupId)
                 .orElseThrow(FavoriteGroupNotFoundException::new);
         return favoriteRepository.findAllByFavoriteGroup(favoriteGroup).stream().map(favorite ->
-            FavoriteResponse.of(favorite, coordinateClient.getCoordinate(favorite.getCoordinateId()).orElseThrow(CoordinateNotFoundException::new))
+            FavoriteResponse.of(favorite, coordinatePort.getCoordinate(favorite.getCoordinateId()).orElseThrow(CoordinateNotFoundException::new))
         ).toList();
     }
 
@@ -95,7 +95,7 @@ public class FavoriteServiceImpl implements FavoriteService {
     public List<FavoriteGroupImageResponse> getFavoriteGroupResponseListOfUser(Long userId) {
         return favoriteGroupRepository.findByUserId(userId).stream().map(favoriteGroup -> {
             List<FileInfo> imageFileList = favoriteGroup.getFavorites().stream().map(favorite ->
-                    coordinateClient.getCoordinate(favorite.getCoordinateId()).orElseThrow(CoordinateNotFoundException::new).imageFile()).toList();
+                    coordinatePort.getCoordinate(favorite.getCoordinateId()).orElseThrow(CoordinateNotFoundException::new).imageFile()).toList();
             return FavoriteGroupImageResponse.of(favoriteGroup, imageFileList);
         }).toList();
     }

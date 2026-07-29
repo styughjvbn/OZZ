@@ -1,62 +1,55 @@
 package com.ssafy.ozz.monolith.config;
 
 import com.ssafy.ozz.auth.global.service.RefreshService;
-import com.ssafy.ozz.clothes.coordinate.dto.request.CoordinateSearchCondition;
 import com.ssafy.ozz.clothes.coordinate.service.CoordinateService;
 import com.ssafy.ozz.fileserver.file.dto.response.FileInfoResponse;
 import com.ssafy.ozz.fileserver.file.service.FileService;
 import com.ssafy.ozz.library.file.FileInfo;
 import com.ssafy.ozz.library.user.UserInfo;
 import com.ssafy.ozz.user.domain.User;
-import com.ssafy.ozz.user.global.file.dto.FeignFileInfo;
+import com.ssafy.ozz.user.application.port.out.dto.UserFileInfo;
 import com.ssafy.ozz.user.service.GuestService;
 import com.ssafy.ozz.user.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
 
 /**
- * 기존 Feign 계약을 보존하면서 호출을 프로세스 내부 메서드 호출로 바꾸는 전환 어댑터.
- * 각 도메인이 공개 application API를 갖추면 이 어댑터와 Feign 계약을 함께 제거한다.
+ * 도메인 모듈의 outbound port를 다른 모듈의 application service에 연결한다.
  */
 @Configuration
 public class InternalModuleAdapters {
 
     @Bean
-    com.ssafy.ozz.auth.global.util.UserClient authUserClient(GuestService guestService) {
-        return () -> ResponseEntity.ok(guestService.createGuest());
+    com.ssafy.ozz.auth.application.port.out.UserAccountPort authUserAccountPort(GuestService guestService) {
+        return guestService::createGuest;
     }
 
     @Bean
-    com.ssafy.ozz.user.global.auth.AuthClient userAuthClient(RefreshService refreshService) {
-        return userId -> {
-            refreshService.deleteExistingRefreshToken(userId);
-            return ResponseEntity.noContent().build();
-        };
+    com.ssafy.ozz.user.application.port.out.AuthTokenPort userAuthTokenPort(RefreshService refreshService) {
+        return refreshService::deleteExistingRefreshToken;
     }
 
     @Bean
-    com.ssafy.ozz.user.global.file.FileClient userFileClient(FileService fileService) {
-        return new com.ssafy.ozz.user.global.file.FileClient() {
+    com.ssafy.ozz.user.application.port.out.FilePort userFilePort(FileService fileService) {
+        return new com.ssafy.ozz.user.application.port.out.FilePort() {
             @Override
-            public Optional<FeignFileInfo> uploadFile(MultipartFile file) {
+            public Optional<UserFileInfo> uploadFile(MultipartFile file) {
                 return Optional.of(toUserFile(save(fileService, file)));
             }
 
             @Override
-            public Optional<FeignFileInfo> getFile(Long fileId) {
+            public Optional<UserFileInfo> getFile(Long fileId) {
                 return Optional.of(toUserFile(fileService.getFile(fileId)));
             }
         };
     }
 
     @Bean
-    com.ssafy.ozz.clothes.global.fegin.file.FileClient clothesFileClient(FileService fileService) {
-        return new com.ssafy.ozz.clothes.global.fegin.file.FileClient() {
+    com.ssafy.ozz.clothes.application.port.out.FilePort clothesFilePort(FileService fileService) {
+        return new com.ssafy.ozz.clothes.application.port.out.FilePort() {
             @Override
             public Optional<FileInfo> uploadFile(MultipartFile file) {
                 return Optional.of(toFileInfo(save(fileService, file)));
@@ -70,8 +63,8 @@ public class InternalModuleAdapters {
     }
 
     @Bean
-    com.ssafy.ozz.board.global.feign.file.FileClient boardFileClient(FileService fileService) {
-        return new com.ssafy.ozz.board.global.feign.file.FileClient() {
+    com.ssafy.ozz.board.application.port.out.FilePort boardFilePort(FileService fileService) {
+        return new com.ssafy.ozz.board.application.port.out.FilePort() {
             @Override
             public Optional<FileInfo> uploadFile(MultipartFile file) {
                 return Optional.of(toFileInfo(save(fileService, file)));
@@ -88,8 +81,8 @@ public class InternalModuleAdapters {
     }
 
     @Bean
-    com.ssafy.ozz.board.global.feign.user.UserClient boardUserClient(UserService userService) {
-        return new com.ssafy.ozz.board.global.feign.user.UserClient() {
+    com.ssafy.ozz.board.application.port.out.UserPort boardUserPort(UserService userService) {
+        return new com.ssafy.ozz.board.application.port.out.UserPort() {
             @Override
             public Optional<UserInfo> getUserInfo(Long userId) {
                 return userService.getUserById(userId).map(InternalModuleAdapters::toUserInfo);
@@ -103,20 +96,12 @@ public class InternalModuleAdapters {
     }
 
     @Bean
-    com.ssafy.ozz.favorite.global.feign.coordinate.CoordinateClient favoriteCoordinateClient(
+    com.ssafy.ozz.favorite.application.port.out.CoordinatePort favoriteCoordinatePort(
             CoordinateService coordinateService
     ) {
-        return new com.ssafy.ozz.favorite.global.feign.coordinate.CoordinateClient() {
+        return new com.ssafy.ozz.favorite.application.port.out.CoordinatePort() {
             @Override
-            public Optional<org.springframework.data.domain.Slice<com.ssafy.ozz.favorite.global.feign.coordinate.CoordinateBasicResponse>>
-            getCoordinateList(Long userId, Long favoriteGroupId, Pageable pageable) {
-                CoordinateSearchCondition condition = CoordinateSearchCondition.builder().build();
-                return Optional.of(coordinateService.getCoordinatesOfUser(userId, condition, pageable)
-                        .map(InternalModuleAdapters::toFavoriteCoordinate));
-            }
-
-            @Override
-            public Optional<com.ssafy.ozz.favorite.global.feign.coordinate.CoordinateBasicResponse> getCoordinate(
+            public Optional<com.ssafy.ozz.favorite.application.port.out.dto.CoordinateInfo> getCoordinate(
                     Long coordinateId
             ) {
                 return Optional.of(toFavoriteCoordinate(
@@ -138,18 +123,18 @@ public class InternalModuleAdapters {
         return new FileInfo((long) file.fileId(), file.filePath(), file.fileName(), file.fileType());
     }
 
-    private static FeignFileInfo toUserFile(FileInfoResponse file) {
-        return new FeignFileInfo((long) file.fileId(), file.filePath(), file.fileName(), file.fileType());
+    private static UserFileInfo toUserFile(FileInfoResponse file) {
+        return new UserFileInfo((long) file.fileId(), file.filePath(), file.fileName(), file.fileType());
     }
 
     private static UserInfo toUserInfo(User user) {
         return new UserInfo(user.getId(), user.getNickname(), user.getProfileFileId(), user.getBirth());
     }
 
-    private static com.ssafy.ozz.favorite.global.feign.coordinate.CoordinateBasicResponse toFavoriteCoordinate(
+    private static com.ssafy.ozz.favorite.application.port.out.dto.CoordinateInfo toFavoriteCoordinate(
             com.ssafy.ozz.clothes.coordinate.dto.response.CoordinateBasicResponse coordinate
     ) {
-        return new com.ssafy.ozz.favorite.global.feign.coordinate.CoordinateBasicResponse(
+        return new com.ssafy.ozz.favorite.application.port.out.dto.CoordinateInfo(
                 coordinate.coordinateId(),
                 coordinate.name(),
                 coordinate.styleList(),

@@ -7,7 +7,6 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchRepositoriesAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.FullyQualifiedAnnotationBeanNameGenerator;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
@@ -15,17 +14,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 @EnableAutoConfiguration(exclude = ElasticsearchRepositoriesAutoConfiguration.class)
 @ComponentScan(
         basePackages = "com.ssafy.ozz",
-        nameGenerator = FullyQualifiedAnnotationBeanNameGenerator.class,
-        excludeFilters = {
-                @ComponentScan.Filter(
-                        type = FilterType.ANNOTATION,
-                        classes = SpringBootConfiguration.class
-                ),
-                @ComponentScan.Filter(
-                        type = FilterType.REGEX,
-                        pattern = "com\\.ssafy\\.ozz\\..*\\.global\\.config\\.SwaggerConfig"
-                )
-        }
+        nameGenerator = FullyQualifiedAnnotationBeanNameGenerator.class
 )
 @EnableJpaAuditing
 @EnableConfigurationProperties(DemoAccountProperties.class)

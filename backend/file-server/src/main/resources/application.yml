@@ -1,8 +1,0 @@
-server:
-  port: ${FILE_PORT:9000}
-
-spring:
-  application:
-    name: ozz-file
-  profiles:
-    active: ${SPRING_PROFILES_ACTIVE:dev}

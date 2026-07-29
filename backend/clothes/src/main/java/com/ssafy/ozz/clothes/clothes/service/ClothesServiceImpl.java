@@ -7,7 +7,7 @@ import com.ssafy.ozz.clothes.clothes.dto.request.*;
 import com.ssafy.ozz.clothes.clothes.dto.response.*;
 import com.ssafy.ozz.clothes.clothes.repository.jpa.ClothesRepository;
 import com.ssafy.ozz.clothes.coordinate.repository.jpa.CoordinateClothesRepository;
-import com.ssafy.ozz.clothes.global.fegin.file.FileClient;
+import com.ssafy.ozz.clothes.application.port.out.FilePort;
 import com.ssafy.ozz.library.error.exception.ClothesNotFoundException;
 import com.ssafy.ozz.library.error.exception.FileNotFoundException;
 import com.ssafy.ozz.library.file.FileInfo;
@@ -37,7 +37,7 @@ public class ClothesServiceImpl implements ClothesService {
 
     private final ClothesRepository clothesRepository;
     private final CategoryService categoryService;
-    private final FileClient fileClient;
+    private final FilePort filePort;
     private final WebClient webClient;
     private final MqService mqService;
     private final CoordinateClothesRepository coordinateClothesRepository;
@@ -74,7 +74,7 @@ public class ClothesServiceImpl implements ClothesService {
     @Transactional(readOnly = true)
     public List<ClothesForRecommendationResponse> getClothesOfUser(Long userId) {
         return clothesRepository.findAllByUserIdAndProcessingLessThanEqual(userId,0).stream().map(clothes -> {
-            FileInfo fileInfo = fileClient.getFile(clothes.getImageFileId()).orElseThrow(FileNotFoundException::new);
+            FileInfo fileInfo = filePort.getFile(clothes.getImageFileId()).orElseThrow(FileNotFoundException::new);
             return new ClothesForRecommendationResponse(clothes, fileInfo);
         }).toList();
     }
@@ -82,7 +82,7 @@ public class ClothesServiceImpl implements ClothesService {
     @Override
     public Clothes saveClothes(Long userId, MultipartFile imageFile, ClothesCreateRequest request) {
         CategoryLow categoryLow = categoryService.getCategoryLow(request.categoryLowId());
-        FileInfo fileInfo = fileClient.uploadFile(imageFile).orElseThrow(FileNotFoundException::new);
+        FileInfo fileInfo = filePort.uploadFile(imageFile).orElseThrow(FileNotFoundException::new);
         Long imageFileId = fileInfo.fileId();
         Clothes clothes = clothesRepository.save(request.toEntity(categoryLow,imageFileId,userId));
         return clothes;
@@ -118,7 +118,7 @@ public class ClothesServiceImpl implements ClothesService {
         FileInfo fileInfo = null;
         if(imageFile != null){
             // 이미지 파일 수정
-            fileInfo = fileClient.uploadFile(imageFile).orElseThrow();
+            fileInfo = filePort.uploadFile(imageFile).orElseThrow();
             clothes.updateImageFile(fileInfo.fileId());
         } else {
             fileInfo = getFileInfoOrNull(clothes.getImageFileId());
@@ -130,7 +130,7 @@ public class ClothesServiceImpl implements ClothesService {
     @Override
     public Long updateClothes(Long clothesId, MultipartFile imageFile) {
         Clothes clothes = getClothes(clothesId);
-        FileInfo fileInfo = fileClient.uploadFile(imageFile).orElseThrow();
+        FileInfo fileInfo = filePort.uploadFile(imageFile).orElseThrow();
         clothes.updateImageFile(fileInfo.fileId());
         clothes.updateProcessing(-1);
 
@@ -218,6 +218,6 @@ public class ClothesServiceImpl implements ClothesService {
         if (imageFileId == null || imageFileId <= 0) {
             return null;
         }
-        return fileClient.getFile(imageFileId).orElse(null);
+        return filePort.getFile(imageFileId).orElse(null);
     }
 }

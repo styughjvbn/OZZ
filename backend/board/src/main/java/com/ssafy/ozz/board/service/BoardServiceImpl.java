@@ -7,8 +7,8 @@ import com.ssafy.ozz.board.dto.request.BoardUpdateRequest;
 import com.ssafy.ozz.board.dto.request.TagDto;
 import com.ssafy.ozz.board.dto.response.BoardResponse;
 import com.ssafy.ozz.board.dto.response.UserResponse;
-import com.ssafy.ozz.board.global.feign.file.FileClient;
-import com.ssafy.ozz.board.global.feign.user.UserClient;
+import com.ssafy.ozz.board.application.port.out.FilePort;
+import com.ssafy.ozz.board.application.port.out.UserPort;
 import com.ssafy.ozz.board.repository.BoardRepository;
 import com.ssafy.ozz.board.repository.TagRepository;
 import com.ssafy.ozz.library.clothes.properties.Style;
@@ -35,8 +35,8 @@ public class BoardServiceImpl implements BoardService {
 
     private final BoardRepository boardRepository;
     private final TagRepository tagRepository;
-    private final UserClient userClient;
-    private final FileClient fileClient;
+    private final UserPort userPort;
+    private final FilePort filePort;
 
 
     @Override
@@ -84,9 +84,9 @@ public class BoardServiceImpl implements BoardService {
     public BoardResponse getBoard(Long boardId) {
         Board board = boardRepository.findById(boardId).orElseThrow(BoardNotFoundException::new);
 
-        FileInfo boardImg = fileClient.getFile(board.getImgFileId()).orElseThrow(FileNotFoundException::new);
-        UserInfo userInfo = userClient.getUserInfoFromId(board.getUserId()).orElseThrow(UserNotFoundException::new);
-        FileInfo profileImg = fileClient.getFile(userInfo.profileFileId()).orElseThrow(FileNotFoundException::new);
+        FileInfo boardImg = filePort.getFile(board.getImgFileId()).orElseThrow(FileNotFoundException::new);
+        UserInfo userInfo = userPort.getUserInfoFromId(board.getUserId()).orElseThrow(UserNotFoundException::new);
+        FileInfo profileImg = filePort.getFile(userInfo.profileFileId()).orElseThrow(FileNotFoundException::new);
 
         UserResponse userResponse = new UserResponse(
                 userInfo.userId() == null ? null : userInfo.userId(),
@@ -169,4 +169,3 @@ public class BoardServiceImpl implements BoardService {
         return boardRepository.findByCreatedDateAfterOrderByLikesDesc(oneDayAgo, pageable);
     }
 }
-
