@@ -142,6 +142,10 @@ spec:
           env:
             - name: JAVA_TOOL_OPTIONS
               value: "-XX:InitialRAMPercentage=10 -XX:MaxRAMPercentage=45 -XX:MaxMetaspaceSize=128m"
+            - name: REDIS_HOST
+              value: "redis"
+            - name: REDIS_PORT
+              value: "6379"
           envFrom:
             - configMapRef:
                 name: ozz-config
