@@ -17,14 +17,18 @@ IMAGES=(
 "${ROOT_DIR}/scripts/build-images.sh" "${TAG}"
 
 ARCHIVE="$(mktemp -t ozz-images.XXXXXX.tar)"
-trap 'rm -f "${ARCHIVE}"' EXIT
+K8S_ARCHIVE="$(mktemp -t ozz-k8s-base.XXXXXX.tar.gz)"
+K8S_BUNDLE_DIR="$(mktemp -d -t ozz-k8s-base.XXXXXX)"
+trap 'rm -f "${ARCHIVE}" "${K8S_ARCHIVE}"; rm -rf "${K8S_BUNDLE_DIR}"' EXIT
 
 docker save -o "${ARCHIVE}" "${IMAGES[@]/%/:${TAG}}"
-tar -czf /tmp/ozz-k8s-base.tar.gz -C "${ROOT_DIR}" k8s
+cp -R "${ROOT_DIR}/k8s" "${K8S_BUNDLE_DIR}/k8s"
+sed -i "s/newTag: dev/newTag: ${TAG}/g" "${K8S_BUNDLE_DIR}/k8s/base/kustomization.yaml"
+tar -czf "${K8S_ARCHIVE}" -C "${K8S_BUNDLE_DIR}" k8s
 
 ssh -p "${MINI_PC_PORT}" "${MINI_PC}" "rm -rf '${REMOTE_DIR}' && mkdir -p '${REMOTE_DIR}'"
 scp -P "${MINI_PC_PORT}" "${ARCHIVE}" "${MINI_PC}:${REMOTE_DIR}/ozz-images.tar"
-scp -P "${MINI_PC_PORT}" /tmp/ozz-k8s-base.tar.gz "${MINI_PC}:${REMOTE_DIR}/ozz-k8s-base.tar.gz"
+scp -P "${MINI_PC_PORT}" "${K8S_ARCHIVE}" "${MINI_PC}:${REMOTE_DIR}/ozz-k8s-base.tar.gz"
 if [[ -n "${SECRET_FILE}" ]]; then
   scp -P "${MINI_PC_PORT}" "${SECRET_FILE}" "${MINI_PC}:${REMOTE_DIR}/ozz-secret.yaml"
 fi

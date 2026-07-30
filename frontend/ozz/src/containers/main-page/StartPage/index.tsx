@@ -3,6 +3,7 @@
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { FaArrowRight } from 'react-icons/fa'
+import DEMO_AUTH_CHANGED_EVENT from '@/lib/demoAuthEvents'
 
 const DEMO_AUTH_URL =
   process.env.NEXT_PUBLIC_DEMO_AUTH_URL || 'https://auth.sjw-project.site'
@@ -28,6 +29,7 @@ const startDemoLogin = async (onSuccess: () => void) => {
     throw new Error('Demo login failed')
   }
 
+  window.dispatchEvent(new Event(DEMO_AUTH_CHANGED_EVENT))
   onSuccess()
 }
 

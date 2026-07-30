@@ -10,6 +10,7 @@ import {
 } from '@sjw-project/demo-header'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { removeTokens } from '@/services/authApi'
+import DEMO_AUTH_CHANGED_EVENT from '@/lib/demoAuthEvents'
 
 const DEMO_AUTH_URL =
   process.env.NEXT_PUBLIC_DEMO_AUTH_URL || 'https://auth.sjw-project.site'
@@ -52,8 +53,22 @@ const createLocalMockAuthClient = (): DemoAuthClient => {
     async logout() {
       document.cookie = `${MOCK_COOKIE_NAME}=; Max-Age=0; path=/`
     },
+    subscribe(listener) {
+      window.addEventListener(DEMO_AUTH_CHANGED_EVENT, listener)
+      return () => window.removeEventListener(DEMO_AUTH_CHANGED_EVENT, listener)
+    },
   }
 }
+
+const withDemoAuthSubscription = (
+  authClient: DemoAuthClient,
+): DemoAuthClient => ({
+  ...authClient,
+  subscribe(listener) {
+    window.addEventListener(DEMO_AUTH_CHANGED_EVENT, listener)
+    return () => window.removeEventListener(DEMO_AUTH_CHANGED_EVENT, listener)
+  },
+})
 
 const isLocalhost = () => {
   return window.location.hostname === 'localhost'
@@ -78,7 +93,7 @@ export default function DemoAuthHeader() {
       return createLocalMockAuthClient()
     }
 
-    return createDemoAuthClient(DEMO_AUTH_URL)
+    return withDemoAuthSubscription(createDemoAuthClient(DEMO_AUTH_URL))
   }, [])
 
   useEffect(() => {

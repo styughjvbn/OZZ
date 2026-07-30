@@ -27,7 +27,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JWTUtil jwtUtil;
 
-    @Value("${internal.api-token:}")
+    @Value("${INTERNAL_API_TOKEN:}")
     private String internalApiToken;
 
     @Override
